@@ -1,13 +1,95 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="tr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport"
-          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>burakbakir</title>
+    <meta charset="UTF-8" />
+    <title>Burakbakir</title>
+    <script src="smoke.js"></script>
+
+    <!-- Bootstrap 5 CSS CDN -->
+    <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-ENjdO4Dr2bkBIFxQpeo5FZ3oKZ5pG2mUO4zMHAHvlmppCmqF5VF5gK1b0I3UlfV5"
+            crossorigin="anonymous"
+    />
+
+    <style>
+        /* Canvas'ın Tam Ekran Olması */
+        body,
+        html {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        /* Div'in Canvas Üzerinde Kalmasını Sağlamak için */
+        .centered-div {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.5); /* Şeffaf arka plan */
+            border: 2px solid rgb(239, 14, 239);
+            padding: 30px;
+            text-align: center;
+            z-index: 10; /* Canvas'ın üzerinde kalması için */
+            border-radius: 10px; /* Kenarları yuvarlama (isteğe bağlı) */
+            pointer-events: none; /* Genel olarak fare etkileşimlerini devre dışı bırak */
+        }
+
+        /* Metin Stilleri */
+        .centered-div h1 {
+            color: white;
+            font-family: "JetBrains Sans", Arial, sans-serif;
+            margin: 0 0 20px 0;
+        }
+
+        /* Link Stilleri */
+        .centered-div a {
+            color: #0d6efd; /* Bootstrap'ın varsayılan link rengi */
+            text-decoration: none;
+            font-weight: bold;
+            pointer-events: auto; /* Linkler üzerinde fare etkileşimlerini etkinleştir */
+        }
+
+        .centered-div a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
 <body>
-<p>hello</p>
+<!-- Canvas -->
+<canvas id="renderSurface" style="width: 100vw; height: 100vh"></canvas>
+
+<!-- Ortalanmış Div -->
+<div class="centered-div" id="centeredDiv">
+    <h1>Hey, selam ben Burak</h1>
+    <p style="color: white">
+        Daha fazla bilgi için
+        <a href="https://example.com" target="_blank">buraya tıklayın</a>.
+    </p>
+</div>
+
+<!-- Bootstrap 5 JS ve Popper.js CDN (Gerekirse) -->
+<script
+        src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js"
+        integrity="sha384-7zQPbK+fV/Sxpjx5hO1VjF9C6uF6lzJkuyN+j9TV7p+AYl+6wZdT0KZ/K74cQBy3"
+        crossorigin="anonymous"
+></script>
+<script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"
+        integrity="sha384-QJHtvGhmr9bInhZRA2G6kD0V5H77+jw9eZ74iKt2E2kF1Aq8QG1nYdSvHx3GdG7D"
+        crossorigin="anonymous"
+></script>
+
+<!-- Fluid.js Aktivasyonu -->
+<script>
+    const canvas = document.getElementById("renderSurface");
+    const smoke = new Smoke(canvas);
+    smoke.activate();
+
+</script>
 </body>
 </html>
