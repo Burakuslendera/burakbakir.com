@@ -10,23 +10,23 @@
         // webpackBootstrap
          // The module cache
          var installedModules = {};
-        
+
          // The require function
          function __webpack_require__(moduleId) {
-            
+
              // Check if module is in cache
              if (installedModules[moduleId]) {
                  return installedModules[moduleId].exports;
-                
+
             }
 
              var module = (installedModules[moduleId] = {
                  i: moduleId,
                  l: false,
                  exports: {},
-                
+
             });
-            
+
 
              modules[moduleId].call(
                 module.exports,
@@ -34,17 +34,17 @@
                 module.exports,
                 __webpack_require__
             );
-            
+
 
              module.l = true;
-            
+
 
              return module.exports;
-            
+
         }
 
          __webpack_require__.m = modules;
-        
+
          __webpack_require__.c = installedModules;
 
          __webpack_require__.d = function (exports, name, getter) {
@@ -53,9 +53,9 @@
                     enumerable: true,
                     get: getter,
                 });
-                
+
             }
-            
+
         };
 
          __webpack_require__.r = function (exports) {
@@ -63,10 +63,10 @@
                  Object.defineProperty(exports, Symbol.toStringTag, {
                     value: "Module",
                 });
-                
+
             }
              Object.defineProperty(exports, "__esModule", { value: true });
-            
+
         };
          __webpack_require__.t = function (value, mode) {
              if (mode & 1) value = __webpack_require__(value);
@@ -94,9 +94,9 @@
                         }.bind(null, key)
                     );
              return ns;
-            
+
         };
-        
+
          __webpack_require__.n = function (module) {
              var getter =
                 module && module.__esModule
@@ -108,7 +108,7 @@
                     };
              __webpack_require__.d(getter, "a", getter);
              return getter;
-            
+
         };
 
          __webpack_require__.o = function (object, property) {
@@ -116,13 +116,13 @@
         };
 
          __webpack_require__.p = "";
-        
-        
+
+
 
          return __webpack_require__(
             (__webpack_require__.s = "smoke.js")
         );
-        
+
     })(
 
          {
@@ -1161,8 +1161,7 @@
                             const velocity = Math.random() * speed + 0.5; // Speed between 0.5 and 5.5
                             const dx = Math.cos(angle) * velocity;
                             const dy = Math.sin(angle) * velocity;
-                            const hsv = generateColorHSV();
-                            const color = getComplementaryColor(hsv);
+                            const color = getComplementaryColor(getComplementaryColor());
                             splat(x, y, dx, dy, color);
                         }
                     }
@@ -1550,8 +1549,7 @@
                             lastColorChangeTime = Date.now();
                             for (let i = 0; i < pointers.length; i++) {
                                 const p = pointers[i];
-                                const hsv = generateColorHSV();
-                                p.color = getComplementaryColor(hsv);
+                                p.color = getComplementaryColor(getComplementaryColor);
                             }
                         }
                     }
@@ -1912,8 +1910,7 @@
                             PROGRAMS.splatProgram.uniforms.uTarget,
                             density.read.attach(0)
                         );
-                        const hsv = generateColorHSV();
-                        color = getComplementaryColor(hsv);
+                        color = getComplementaryColor(generateColorHSV());
                         webGL.uniform3f(
                             PROGRAMS.splatProgram.uniforms.color,
                             color.r,
@@ -1928,16 +1925,15 @@
 
                     function multipleSplats(amount) {
                         for (let i = 0; i < amount; i++) {
-                            const hsv = generateColorHSV();
-                            const color = HSVtoRGB(hsv.h, hsv.s, hsv.v);
+                            const color = getComplementaryColor(generateColorHSV());
                             splat(500, 500, 100, 0, color);
                         }
                     }
 
                     function resizeCanvas() {
                         if (
-                            canvas.width != canvas.clientWidth ||
-                            canvas.height != canvas.clientHeight
+                            canvas.width !== canvas.clientWidth ||
+                            canvas.height !== canvas.clientHeight
                         ) {
                             canvas.width = canvas.clientWidth;
                             canvas.height = canvas.clientHeight;
@@ -1953,7 +1949,7 @@
 
                     function getComplementaryHSV(hsv) {
                         let complementaryHue = (hsv.h * 360 + 180) % 360;
-                        return { h: complementaryHue / 360, s: hsv.s, v: hsv.v };
+                        return { h: complementaryHue, s: hsv.s, v: hsv.v };
                     }
 
                     function HSVtoRGB(h, s, v) {
@@ -1998,18 +1994,36 @@
                     }
 
                     function getComplementaryColor(hsv) {
+                        if (!hsv) return null;
+
                         let complementaryHSV = getComplementaryHSV(hsv);
-                        let rgb = HSVtoRGB(complementaryHSV.h, complementaryHSV.s, complementaryHSV.v);
-                        rgb.r *= 0.29317843;
+                        let rgb = HSVtoRGB(complementaryHSV.h / 360, 2.0, 0.7);
+                        // ileride siyah beyaz tema yapmak istersem bir kısa taslak
+
+                        // // Arka plan rengi siyah ise, renklerin parlaklığını azalt
+                        // if (arkaPlanRengi === 'siyah') {
+                        //     rgb.r *= 0.9;
+                        //     rgb.g *= 0.9;
+                        //     rgb.b *= 0.9;
+                        // }
+                        //
+                        // // Arka plan rengi beyaz ise, renklerin doygunluğunu azalt
+                        // if (arkaPlanRengi === 'beyaz') {
+                        //     rgb.r *= 0.8;
+                        //     rgb.g *= 0.8;
+                        //     rgb.b *= 0.8;
+
+                        rgb.r *= 0.29317844;
                         rgb.g *= 0.29317843;
-                        rgb.b *= 0.29317843;
+                        rgb.b *= 0.29317842;
                         return rgb;
                     }
 
 
 
+
                     function calculateDistance (x1, y1, x2, y2) {
-                        // Doğru denklemine göre distance ayarlıyoruz.
+                        // Doğru denklemine göre distance ayarlıyoruz.k
                         return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
                     }
 
@@ -2088,14 +2102,20 @@
 
                     // Mevcut 'mousemove' olay dinleyicisini güncelleyin
                     canvas.addEventListener("mousemove", (e) => {
-                        const p = pointers[0];
-                        p.moved = true; // Her harekette 'moved' true olacak
-                        p.dx = (e.offsetX - p.x) * 5.0;
-                        p.dy = (e.offsetY - p.y) * 5.0;
-                        p.x = e.offsetX;
-                        p.y = e.offsetY;
-                        splat(e.offsetX, e.offsetY, p.dx, p.dy);
+                        if (pointers.length > 0) {
+                            const p = pointers[0];
+                            p.moved = true;
+                            const rect = canvas.getBoundingClientRect();
+                            p.dx = (e.clientX - rect.left - p.x) * 5.0;
+                            p.dy = (e.clientY - rect.top - p.y) * 5.0;
+                            p.x = e.clientX - rect.left;
+                            p.y = e.clientY - rect.top;
+                            if (typeof splat === 'function') {
+                                splat(p.x, p.y, p.dx, p.dy);
+                            }
+                        }
                     });
+
 
                     // 'mousedown' ve 'mouseup' olay dinleyicilerini kaldırın veya yorum satırı haline getirin
                     // canvas.addEventListener('mousedown', () => {
