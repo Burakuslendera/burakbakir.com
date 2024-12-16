@@ -695,9 +695,7 @@
                                 defualts.DRAWING_PARAMS
                             );
 
-                    var colorFormats = getFormats();
-
-                    if (isMobile()) defualts.behavior.render_shaders = false;
+                    let colorFormats = getFormats();
 
                     if (!colorFormats.supportLinearFiltering) {
                         defualts.behavior.render_shaders = false;
@@ -705,7 +703,7 @@
                     }
 
 
-                    var SHADER = {
+                    let SHADER = {
                         baseVertex: compileShader(
                             webGL.VERTEX_SHADER,
                             defualts.SHADER_SOURCE.vertex
@@ -1155,16 +1153,48 @@
                         };
                     })();
 
-                    function launchFirework(x, y, numParticles = 100, speed = 5.0) {
+
+                    function LaunchBalloon(x, y, numParticles = 100, speed = 4.0, burst = false) {
+                        // Canvas boyutlarını al
+                        const canvasHeight = canvas.height;
+                        const canvasWidth = canvas.width;
+
+                        // %10 marjin hesapla
+                        const minY = canvasHeight * 0.1;
+                        const maxY = canvasHeight * 0.9;
+                        const minX = canvasWidth * 0.1;
+                        const maxX = canvasWidth * 0.9;
+
+                        // x ve y koordinatlarını %10 marjin içinde olacak şekilde sınırlayın
+                        x = Math.min(Math.max(x, minX), maxX);
+                        y = Math.min(Math.max(y, minY), maxY);
+
                         for (let i = 0; i < numParticles; i++) {
-                            const angle = Math.random() * 2 * Math.PI;
-                            const velocity = Math.random() * speed + 0.5; // Speed between 0.5 and 5.5
+                            // Parçacıkları dairesel bir dağılımla oluşturun
+                            const angle = Math.random() * 2 * Math.PI; // 0-360 derece arasında rastgele açı
+                            const velocity = Math.random() * speed + 1.0; // Hız: 1.0 - 5.0 arası
                             const dx = Math.cos(angle) * velocity;
                             const dy = Math.sin(angle) * velocity;
-                            const color = getComplementaryColor(getComplementaryColor());
+                            const color = getComplementaryColor(generateColorHSV()); // Su balonlarına uygun renk
                             splat(x, y, dx, dy, color);
                         }
+
+                        if (burst) {
+                            // Balon patlaması efekti
+                            setTimeout(() => {
+                                for (let i = 0; i < 100; i++) {
+                                    const angle = Math.random() * 2 * Math.PI;
+                                    const velocity = Math.random() * 3 + 1.0;
+                                    const dx = Math.cos(angle) * velocity;
+                                    const dy = Math.sin(angle) * velocity;
+                                    const color = getComplementaryColor(generateColorHSV());
+                                    splat(x, y, dx, dy, color);
+                                }
+                            }, 2000); // 2 saniye sonra patlama
+                        }
                     }
+
+
 
 
 
@@ -1179,7 +1209,7 @@
                         : createTextureAsync(ditherURL);
 
                     init();
-                    startbaloon();
+                    StartBaloon();
 
                     var lastColorChangeTime = Date.now();
                     update();
@@ -1549,7 +1579,7 @@
                             lastColorChangeTime = Date.now();
                             for (let i = 0; i < pointers.length; i++) {
                                 const p = pointers[i];
-                                p.color = getComplementaryColor(getComplementaryColor);
+                                p.color = getComplementaryColor(getComplementaryColor());
                             }
                         }
                     }
@@ -1757,7 +1787,7 @@
                                     program.uniforms.uDithering,
                                     ditheringTexture.attach(2)
                                 );
-                                var scale = getTextureScale(ditheringTexture, width, height);
+                                let scale = getTextureScale(ditheringTexture, width, height);
                                 webGL.uniform2f(
                                     program.uniforms.ditherScale,
                                     scale.x,
@@ -1765,7 +1795,7 @@
                                 );
                             }
                         } else {
-                            var _program = PARAMS.render_bloom
+                            let _program = PARAMS.render_bloom
                                 ? PROGRAMS.displayBloomProgram
                                 : PROGRAMS.displayProgram;
 
@@ -1783,7 +1813,7 @@
                                     ditheringTexture.attach(2)
                                 );
 
-                                var _scale = getTextureScale(ditheringTexture, width, height);
+                                let _scale = getTextureScale(ditheringTexture, width, height);
 
                                 webGL.uniform2f(
                                     _program.uniforms.ditherScale,
@@ -1822,6 +1852,19 @@
                         webGL.viewport(0, 0, last.width, last.height);
                         blit(last.fbo);
                         PROGRAMS.bloomBlurProgram.bind();
+                        PROGRAMS.displayShadingProgram.bind();
+                        webGL.uniform3f(
+                            PROGRAMS.displayShadingProgram.uniforms.lightDirection,
+                            0.0, 0.0, 1.0 // Işık yönü (z ekseninde)
+                        );
+                        webGL.uniform3f(
+                            PROGRAMS.displayShadingProgram.uniforms.lightColor,
+                            1.0, 1.0, 1.0 // Beyaz ışık
+                        );
+                        webGL.uniform1f(
+                            PROGRAMS.displayShadingProgram.uniforms.shininess,
+                            32.0 // Parlaklık faktörü
+                        );
 
                         for (var i = 0; i < bloomFrameBuffers.length; i++) {
                             var dest = bloomFrameBuffers[i];
@@ -1842,8 +1885,8 @@
                         webGL.blendFunc(webGL.ONE, webGL.ONE);
                         webGL.enable(webGL.BLEND);
 
-                        for (var _i2 = bloomFrameBuffers.length - 2; _i2 >= 0; _i2--) {
-                            var baseTex = bloomFrameBuffers[_i2];
+                        for (let _i2 = bloomFrameBuffers.length - 2; _i2 >= 0; _i2--) {
+                            let baseTex = bloomFrameBuffers[_i2];
                             webGL.uniform2f(
                                 PROGRAMS.bloomBlurProgram.uniforms.texelSize,
                                 1.0 / last.width,
@@ -1952,37 +1995,51 @@
                         return { h: complementaryHue, s: hsv.s, v: hsv.v };
                     }
 
+                    /**
+                     * HSV renk uzayından RGB renk uzayına dönüştürme fonksiyonu.
+                     * @param {number} h - Hue (0 - 360)
+                     * @param {number} s - Saturation (0 - 1)
+                     * @param {number} v - Value (0 - 1)
+                     * @returns {object} - { r, g, b }
+                     */
                     function HSVtoRGB(h, s, v) {
-                        let r, g, b, i, f, p, q, t;
-                        i = Math.floor(h * 6);
-                        f = h * 6 - i;
-                        p = v * (1 - s);
-                        q = v * (1 - f * s);
-                        t = v * (1 - (1 - f) * s);
+                        let r, g, b;
+                        let i = Math.floor(h * 6);
+                        let f = h * 6 - i;
+                        let p = v * (1 - s);
+                        let q = v * (1 - f * s);
+                        let t = v * (1 - (1 - f) * s);
 
                         switch (i % 6) {
                             case 0:
-                                (r = v), (g = t), (b = p);
+                                r = v;
+                                g = t;
+                                b = p;
                                 break;
-
                             case 1:
-                                (r = q), (g = v), (b = p);
+                                r = q;
+                                g = v;
+                                b = p;
                                 break;
-
                             case 2:
-                                (r = p), (g = v), (b = t);
+                                r = p;
+                                g = v;
+                                b = t;
                                 break;
-
                             case 3:
-                                (r = p), (g = q), (b = v);
+                                r = p;
+                                g = q;
+                                b = v;
                                 break;
-
                             case 4:
-                                (r = t), (g = p), (b = v);
+                                r = t;
+                                g = p;
+                                b = v;
                                 break;
-
                             case 5:
-                                (r = v), (g = p), (b = q);
+                                r = v;
+                                g = p;
+                                b = q;
                                 break;
                         }
 
@@ -1992,32 +2049,33 @@
                             b: b,
                         };
                     }
+                    //
+                     function getComplementaryColor(hsv) {
+                         if (!hsv) return null;
 
-                    function getComplementaryColor(hsv) {
-                        if (!hsv) return null;
+                         let complementaryHSV = getComplementaryHSV(hsv);
+                         let rgb = HSVtoRGB(complementaryHSV.h, complementaryHSV.s, complementaryHSV.v);
+                         // ileride siyah beyaz tema yapmak istersem bir kısa taslak
 
-                        let complementaryHSV = getComplementaryHSV(hsv);
-                        let rgb = HSVtoRGB(complementaryHSV.h / 360, 2.0, 0.7);
-                        // ileride siyah beyaz tema yapmak istersem bir kısa taslak
+                         // // Arka plan rengi siyah ise, renklerin parlaklığını azalt
+                         // if (arkaPlanRengi === 'siyah') {
+                         //     rgb.r *= 0.29317844;
+                         //     rgb.g *= 0.29317844;
+                         //     rgb.b *= 0.29317844;
+                         // }
+                         //
+                         // // Arka plan rengi beyaz ise, renklerin doygunluğunu azalt
+                         // if (arkaPlanRengi === 'beyaz') {
+                         //     rgb.r *= 0.8;
+                         //     rgb.g *= 0.29317844;
+                         //     rgb.b *= 0.29317844;
 
-                        // // Arka plan rengi siyah ise, renklerin parlaklığını azalt
-                        // if (arkaPlanRengi === 'siyah') {
-                        //     rgb.r *= 0.9;
-                        //     rgb.g *= 0.9;
-                        //     rgb.b *= 0.9;
-                        // }
-                        //
-                        // // Arka plan rengi beyaz ise, renklerin doygunluğunu azalt
-                        // if (arkaPlanRengi === 'beyaz') {
-                        //     rgb.r *= 0.8;
-                        //     rgb.g *= 0.8;
-                        //     rgb.b *= 0.8;
+                         rgb.r *= 0.59317844;
+                         rgb.g *= 0.59317843;
+                         rgb.b *= 0.59317842;
+                         return rgb;
+                     }
 
-                        rgb.r *= 0.29317844;
-                        rgb.g *= 0.29317843;
-                        rgb.b *= 0.29317842;
-                        return rgb;
-                    }
 
 
 
@@ -2051,26 +2109,26 @@
                         return {x ,y};
                     }
 
-                    function startbaloon(duration = 4000, interval = 500, minDistance = 100) {
+                    function StartBaloon(duration = 4000, interval = 500, minDistance = 100) {
                         const startTime = Date.now();
-                        const existingFireworks = [];
-                        const fireworksInterval = setInterval(() => {
+                        const existingBaloon = [];
+                        const BaloonInterval = setInterval(() => {
                             const elapsed = Date.now() - startTime;
                             if (elapsed > duration) {
-                                clearInterval(fireworksInterval);
+                                clearInterval(BaloonInterval);
                                 return;
                             }
 
-                            const { x, y } = getValidPosition(existingFireworks, minDistance, canvas.width, canvas.height);
+                            const { x, y } = getValidPosition(existingBaloon, minDistance, canvas.width, canvas.height);
 
-                            // Yeni havai fişeği oluştur ve listeye ekle
-                            existingFireworks.push({ x, y });
+
+                            existingBaloon.push({ x, y });
 
                             // Patlama sayısını ve hızını rastgele belirle
-                            const numParticles = Math.floor(Math.random() * 50) + 100; // 50 ile 100 arasında
-                            const speed = Math.random() * 2 + 1; // 1 ile 3 arasında
+                            const numParticles = Math.floor(Math.random() * 50) + 200; // 50 ile 100 arasında
+                            const speed = Math.random() * 2 + 3; // 1 ile 3 arasında
 
-                            launchFirework(x, y, numParticles, speed);
+                            LaunchBalloon(x, y, numParticles, speed);
                         }, interval);
                     }
 
@@ -2115,6 +2173,7 @@
                             }
                         }
                     });
+
 
 
                     // 'mousedown' ve 'mouseup' olay dinleyicilerini kaldırın veya yorum satırı haline getirin
@@ -2223,7 +2282,7 @@
 
             },
 
-            
+
         }
     );
 });

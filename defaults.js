@@ -121,36 +121,50 @@ export const SHADER_SOURCE = {
           }
       `,
     displayShading: `
-          precision highp float;
-          precision highp sampler2D;
-      
-          varying vec2 vUv;
-          varying vec2 vL;
-          varying vec2 vR;
-          varying vec2 vT;
-          varying vec2 vB;
-          uniform sampler2D uTexture;
-          uniform vec2 texelSize;
-      
-          void main () {
-              vec3 L = texture2D(uTexture, vL).rgb;
-              vec3 R = texture2D(uTexture, vR).rgb;
-              vec3 T = texture2D(uTexture, vT).rgb;
-              vec3 B = texture2D(uTexture, vB).rgb;
-              vec3 C = texture2D(uTexture, vUv).rgb;
-      
-              float dx = length(R) - length(L);
-              float dy = length(T) - length(B);
-      
-              vec3 n = normalize(vec3(dx, dy, length(texelSize)));
-              vec3 l = vec3(0.0, 0.0, 1.0);
-      
-              float diffuse = clamp(dot(n, l) + 0.7, 0.7, 1.0);
-              C.rgb *= diffuse;
-      
-              float a = max(C.r, max(C.g, C.b));
-              gl_FragColor = vec4(C, a);
-          }
+        precision highp float;
+        precision highp sampler2D;
+
+        varying vec2 vUv;
+        varying vec2 vL;
+        varying vec2 vR;
+        varying vec2 vT;
+        varying vec2 vB;
+        uniform sampler2D uTexture;
+        uniform vec2 texelSize;
+
+        // Işık özellikleri
+        uniform vec3 lightDirection;
+        uniform vec3 lightColor;
+        uniform float shininess;
+
+        void main () {
+            vec3 L = texture2D(uTexture, vL).rgb;
+            vec3 R = texture2D(uTexture, vR).rgb;
+            vec3 T = texture2D(uTexture, vT).rgb;
+            vec3 B = texture2D(uTexture, vB).rgb;
+            vec3 C = texture2D(uTexture, vUv).rgb;
+
+            float dx = length(R) - length(L);
+            float dy = length(T) - length(B);
+
+            vec3 n = normalize(vec3(dx, dy, length(texelSize)));
+            vec3 L_dir = normalize(lightDirection);
+            float diffuse = max(dot(n, L_dir), 0.0);
+
+            vec3 viewDir = normalize(vec3(0.0, 0.0, 1.0));
+            vec3 reflectDir = reflect(-L_dir, n);
+            float spec = pow(max(dot(viewDir, reflectDir), 0.0), shininess);
+
+            float fresnel = pow(1.0 - max(dot(viewDir, n), 0.0), 3.0);
+
+            vec3 color = C.rgb * (diffuse * lightColor) + spec * lightColor + fresnel * lightColor * 0.3;
+
+            vec3 ambient = 0.1 * lightColor;
+            color += ambient;
+
+            float a = 0.8;
+            gl_FragColor = vec4(color, a);
+        }
       `,
     displayBloomShading: `
           precision highp float;
@@ -459,5 +473,9 @@ export const SHADER_SOURCE = {
 };
 
 export function setBehaviors(params) {
-    behavior = {...behavior, ...params};
+    behavior = {...behavior,
+        ...params,
+        velocity: 0.95,
+        dissipation: 0.98,
+        emitter_size: 1.0, };
 }

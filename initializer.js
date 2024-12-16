@@ -675,41 +675,61 @@ export function activator(canvas, webGL, colorFormat, PROGRAMS, pointers) {
         return c;
     }
 
+    /**
+     * HSV renk uzayından RGB renk uzayına dönüştürme fonksiyonu.
+     * @param {number} h - Hue (0 - 360)
+     * @param {number} s - Saturation (0 - 1)
+     * @param {number} v - Value (0 - 1)
+     * @returns {object} - { r, g, b }
+     */
     function HSVtoRGB(h, s, v) {
-        let r, g, b, i, f, p, q, t;
-        i = Math.floor(h * 6);
-        f = h * 6 - i;
-        p = v * (1 - s);
-        q = v * (1 - f * s);
-        t = v * (1 - (1 - f) * s);
+        let r, g, b;
+        let i = Math.floor(h * 6);
+        let f = h * 6 - i;
+        let p = v * (1 - s);
+        let q = v * (1 - f * s);
+        let t = v * (1 - (1 - f) * s);
 
         switch (i % 6) {
             case 0:
-                r = v, g = t, b = p;
+                r = v;
+                g = t;
+                b = p;
                 break;
             case 1:
-                r = q, g = v, b = p;
+                r = q;
+                g = v;
+                b = p;
                 break;
             case 2:
-                r = p, g = v, b = t;
+                r = p;
+                g = v;
+                b = t;
                 break;
             case 3:
-                r = p, g = q, b = v;
+                r = p;
+                g = q;
+                b = v;
                 break;
             case 4:
-                r = t, g = p, b = v;
+                r = t;
+                g = p;
+                b = v;
                 break;
             case 5:
-                r = v, g = p, b = q;
+                r = v;
+                g = p;
+                b = q;
                 break;
         }
 
         return {
-            r,
-            g,
-            b
+            r: r,
+            g: g,
+            b: b,
         };
     }
+
 
     function getResolution(resolution) {
         let aspectRatio = webGL.drawingBufferWidth / webGL.drawingBufferHeight;
