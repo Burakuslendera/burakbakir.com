@@ -32,7 +32,7 @@ export function initWebGL(canvas){
 
 
     const SHADER = {
-        baseVertex               : compileShader(webGL.VERTEX_SHADER, defaults.SHADER_SOURCE.vertex),
+        baseVerex               : compileShader(webGL.VERTEX_SHADER, defaults.SHADER_SOURCE.vertex),
 
         clear                    : compileShader(webGL.FRAGMENT_SHADER, defaults.SHADER_SOURCE.clear),
         color                    : compileShader(webGL.FRAGMENT_SHADER, defaults.SHADER_SOURCE.color),
