@@ -1,4 +1,5 @@
 "use strict";
+
 (function webpackUniversalModuleDefinition(root, factory) {
     if (typeof exports === "object" && typeof module === "object")
         module.exports = factory();
@@ -150,6 +151,30 @@
                     value: true,
                 });
                 exports.setBehaviors = setBehaviors;
+                // loadShader().then(() => {
+                //      // Burada SHADER_SOURCE artık yüklenmiş halde
+                //     console.log('Shaderlar yüklendi:', SHADER_SOURCE);
+                //
+                //     // WebGL veya Canvas kurulumu, shader compile vb.
+                //     const { programs, webGL, pointers } = initWebGL(canvas);
+                // });
+
+
+                 loadShader()
+                     .then(() => {
+                         console.log("Shader'lar yüklendi!");
+
+                         // 2) Ardından canvas'ı elde edip, Smoke nesnesini yarat
+                         const canvas = document.getElementById("renderSurface");
+                         const smoke = new Smoke(canvas);
+
+                         smoke.activate();
+                     })
+                     .catch(err => {
+                         console.error("Shader yüklenirken hata:", err);
+                     });
+
+
                 exports.SHADER_SOURCE =
                     exports.DRAWING_PARAMS =
                         exports.behavior =
@@ -249,45 +274,75 @@
                 exports.DRAWING_PARAMS = DRAWING_PARAMS;
                 var SHADER_SOURCE = {
                     blank: "",
-                    vertex:
-                        "\n                  precision highp float;\n              \n                  attribute vec2 aPosition;\n                  varying vec2 vUv;\n                  varying vec2 vL;\n                  varying vec2 vR;\n                  varying vec2 vT;\n                  varying vec2 vB;\n                  uniform vec2 texelSize;\n              \n                  void main () {\n                      vUv = aPosition * 0.5 + 0.5;\n                      vL = vUv - vec2(texelSize.x, 0.0);\n                      vR = vUv + vec2(texelSize.x, 0.0);\n                      vT = vUv + vec2(0.0, texelSize.y);\n                      vB = vUv - vec2(0.0, texelSize.y);\n                      gl_Position = vec4(aPosition, 0.0, 1.0);\n                  }",
-                    clear:
-                        "\n                  precision mediump float;\n                  precision mediump sampler2D;\n              \n                  varying highp vec2 vUv;\n                  uniform sampler2D uTexture;\n                  uniform float value;\n              \n                  void main () {\n                      gl_FragColor = value * texture2D(uTexture, vUv);\n                  }\n              ",
-                    color:
-                        "\n                  precision mediump float;\n              \n                  uniform vec4 color;\n              \n                  void main () {\n                      gl_FragColor = color;\n                  }\n              ",
-                    background:
-                        "\n                    void main() { \n                        gl_FragColor = vec4(0.0, 0.0, 0.0, 0.0); \n                    } \n            ",
-                    display:
-                        "\n                  precision highp float;\n                  precision highp sampler2D;\n              \n                  varying vec2 vUv;\n                  uniform sampler2D uTexture;\n              \n                  void main () {\n                      vec3 C = texture2D(uTexture, vUv).rgb;\n                      float a = max(C.r, max(C.g, C.b));\n                      gl_FragColor = vec4(C, a);\n                  }\n              ",
-                    displayBloom:
-                        "\n          precision highp float;\n          precision highp sampler2D;\n      \n          varying vec2 vUv;\n          uniform sampler2D uTexture;\n          uniform sampler2D uBloom;\n          uniform sampler2D uDithering;\n          uniform vec2 ditherScale;\n      \n          void main () {\n              vec3 C = texture2D(uTexture, vUv).rgb;\n              vec3 bloom = texture2D(uBloom, vUv).rgb;\n              vec3 noise = texture2D(uDithering, vUv * ditherScale).rgb;\n              noise = noise * 2.0 - 1.0;\n              bloom += noise / 800.0;\n              bloom = pow(bloom.rgb, vec3(1.0 / 2.2));\n              C += bloom;\n              float a = max(C.r, max(C.g, C.b));\n              gl_FragColor = vec4(C, a);\n          }\n      ",
-                    displayShading:
-                        "\n          precision highp float;\n          precision highp sampler2D;\n      \n          varying vec2 vUv;\n          varying vec2 vL;\n          varying vec2 vR;\n          varying vec2 vT;\n          varying vec2 vB;\n          uniform sampler2D uTexture;\n          uniform vec2 texelSize;\n      \n          void main () {\n              vec3 L = texture2D(uTexture, vL).rgb;\n              vec3 R = texture2D(uTexture, vR).rgb;\n              vec3 T = texture2D(uTexture, vT).rgb;\n              vec3 B = texture2D(uTexture, vB).rgb;\n              vec3 C = texture2D(uTexture, vUv).rgb;\n      \n              float dx = length(R) - length(L);\n              float dy = length(T) - length(B);\n      \n              vec3 n = normalize(vec3(dx, dy, length(texelSize)));\n              vec3 l = vec3(0.0, 0.0, 1.0);\n      \n              float diffuse = clamp(dot(n, l) + 0.7, 0.7, 1.0);\n              C.rgb *= diffuse;\n      \n              float a = max(C.r, max(C.g, C.b));\n              gl_FragColor = vec4(C, a);\n          }\n      ",
-                    displayBloomShading:
-                        "\n          precision highp float;\n          precision highp sampler2D;\n      \n          varying vec2 vUv;\n          varying vec2 vL;\n          varying vec2 vR;\n          varying vec2 vT;\n          varying vec2 vB;\n          uniform sampler2D uTexture;\n          uniform sampler2D uBloom;\n          uniform sampler2D uDithering;\n          uniform vec2 ditherScale;\n          uniform vec2 texelSize;\n      \n          void main () {\n              vec3 L = texture2D(uTexture, vL).rgb;\n              vec3 R = texture2D(uTexture, vR).rgb;\n              vec3 T = texture2D(uTexture, vT).rgb;\n              vec3 B = texture2D(uTexture, vB).rgb;\n              vec3 C = texture2D(uTexture, vUv).rgb;\n      \n              float dx = length(R) - length(L);\n              float dy = length(T) - length(B);\n      \n              vec3 n = normalize(vec3(dx, dy, length(texelSize)));\n              vec3 l = vec3(0.0, 0.0, 1.0);\n      \n              float diffuse = clamp(dot(n, l) + 0.7, 0.7, 1.0);\n              C *= diffuse;\n      \n              vec3 bloom = texture2D(uBloom, vUv).rgb;\n              vec3 noise = texture2D(uDithering, vUv * ditherScale).rgb;\n              noise = noise * 2.0 - 1.0;\n              bloom += noise / 800.0;\n              bloom = pow(bloom.rgb, vec3(1.0 / 2.2));\n              C += bloom;\n      \n              float a = max(C.r, max(C.g, C.b));\n              gl_FragColor = vec4(C, a);\n          }\n      ",
-                    bloomPreFilter:
-                        "\n          precision mediump float;\n          precision mediump sampler2D;\n      \n          varying vec2 vUv;\n          uniform sampler2D uTexture;\n          uniform vec3 curve;\n          uniform float threshold;\n      \n          void main () {\n              vec3 c = texture2D(uTexture, vUv).rgb;\n              float br = max(c.r, max(c.g, c.b));\n              float rq = clamp(br - curve.x, 0.0, curve.y);\n              rq = curve.z * rq * rq;\n              c *= max(rq, br - threshold) / max(br, 0.0001);\n              gl_FragColor = vec4(c, 0.0);\n          }\n      ",
-                    bloomBlur:
-                        "\n          precision mediump float;\n          precision mediump sampler2D;\n      \n          varying vec2 vL;\n          varying vec2 vR;\n          varying vec2 vT;\n          varying vec2 vB;\n          uniform sampler2D uTexture;\n      \n          void main () {\n              vec4 sum = vec4(0.0);\n              sum += texture2D(uTexture, vL);\n              sum += texture2D(uTexture, vR);\n              sum += texture2D(uTexture, vT);\n              sum += texture2D(uTexture, vB);\n              sum *= 0.25;\n              gl_FragColor = sum;\n          }\n      ",
-                    bloomFinal:
-                        "\n          precision mediump float;\n          precision mediump sampler2D;\n      \n          varying vec2 vL;\n          varying vec2 vR;\n          varying vec2 vT;\n          varying vec2 vB;\n          uniform sampler2D uTexture;\n          uniform float intensity;\n      \n          void main () {\n              vec4 sum = vec4(0.0);\n              sum += texture2D(uTexture, vL);\n              sum += texture2D(uTexture, vR);\n              sum += texture2D(uTexture, vT);\n              sum += texture2D(uTexture, vB);\n              sum *= 0.25;\n              gl_FragColor = sum * intensity;\n          }\n      ",
-                    splat:
-                        "\n          precision highp float;\n          precision highp sampler2D;\n      \n          varying vec2 vUv;\n          uniform sampler2D uTarget;\n          uniform float aspectRatio;\n          uniform vec3 color;\n          uniform vec2 point;\n          uniform float radius;\n      \n          void main () {\n              vec2 p = vUv - point.xy;\n              p.x *= aspectRatio;\n              vec3 splat = exp(-dot(p, p) / radius) * color;\n              vec3 base = texture2D(uTarget, vUv).xyz;\n              gl_FragColor = vec4(base + splat, 1.0);\n          }\n      ",
-                    advectionManualFiltering:
-                        "\n          precision highp float;\n          precision highp sampler2D;\n      \n          varying vec2 vUv;\n          uniform sampler2D uVelocity;\n          uniform sampler2D uSource;\n          uniform vec2 texelSize;\n          uniform vec2 dyeTexelSize;\n          uniform float dt;\n          uniform float dissipation;\n      \n          vec4 bilerp (sampler2D sam, vec2 uv, vec2 tsize) {\n              vec2 st = uv / tsize - 0.5;\n      \n              vec2 iuv = floor(st);\n              vec2 fuv = fract(st);\n      \n              vec4 a = texture2D(sam, (iuv + vec2(0.5, 0.5)) * tsize);\n              vec4 b = texture2D(sam, (iuv + vec2(1.5, 0.5)) * tsize);\n              vec4 c = texture2D(sam, (iuv + vec2(0.5, 1.5)) * tsize);\n              vec4 d = texture2D(sam, (iuv + vec2(1.5, 1.5)) * tsize);\n      \n              return mix(mix(a, b, fuv.x), mix(c, d, fuv.x), fuv.y);\n          }\n      \n          void main () {\n              vec2 coord = vUv - dt * bilerp(uVelocity, vUv, texelSize).xy * texelSize;\n              gl_FragColor = dissipation * bilerp(uSource, coord, dyeTexelSize);\n              gl_FragColor.a = 1.0;\n          }\n      ",
-                    advection:
-                        "\n          precision highp float;\n          precision highp sampler2D;\n      \n          varying vec2 vUv;\n          uniform sampler2D uVelocity;\n          uniform sampler2D uSource;\n          uniform vec2 texelSize;\n          uniform float dt;\n          uniform float dissipation;\n      \n          void main () {\n              vec2 coord = vUv - dt * texture2D(uVelocity, vUv).xy * texelSize;\n              gl_FragColor = dissipation * texture2D(uSource, coord);\n              gl_FragColor.a = 1.0;\n          }\n      ",
-                    divergence:
-                        "\n          precision mediump float;\n          precision mediump sampler2D;\n      \n          varying highp vec2 vUv;\n          varying highp vec2 vL;\n          varying highp vec2 vR;\n          varying highp vec2 vT;\n          varying highp vec2 vB;\n          uniform sampler2D uVelocity;\n      \n          void main () {\n              float L = texture2D(uVelocity, vL).x;\n              float R = texture2D(uVelocity, vR).x;\n              float T = texture2D(uVelocity, vT).y;\n              float B = texture2D(uVelocity, vB).y;\n      \n              vec2 C = texture2D(uVelocity, vUv).xy;\n              if (vL.x < 0.0) { L = -C.x; }\n              if (vR.x > 1.0) { R = -C.x; }\n              if (vT.y > 1.0) { T = -C.y; }\n              if (vB.y < 0.0) { B = -C.y; }\n      \n              float div = 0.5 * (R - L + T - B);\n              gl_FragColor = vec4(div, 0.0, 0.0, 1.0);\n          }\n      ",
-                    curl: "\n          precision mediump float;\n          precision mediump sampler2D;\n      \n          varying highp vec2 vUv;\n          varying highp vec2 vL;\n          varying highp vec2 vR;\n          varying highp vec2 vT;\n          varying highp vec2 vB;\n          uniform sampler2D uVelocity;\n      \n          void main () {\n              float L = texture2D(uVelocity, vL).y;\n              float R = texture2D(uVelocity, vR).y;\n              float T = texture2D(uVelocity, vT).x;\n              float B = texture2D(uVelocity, vB).x;\n              float vorticity = R - L - T + B;\n              gl_FragColor = vec4(0.5 * vorticity, 0.0, 0.0, 1.0);\n          }\n      ",
-                    vorticity:
-                        "\n          precision highp float;\n          precision highp sampler2D;\n      \n          varying vec2 vUv;\n          varying vec2 vL;\n          varying vec2 vR;\n          varying vec2 vT;\n          varying vec2 vB;\n          uniform sampler2D uVelocity;\n          uniform sampler2D uCurl;\n          uniform float curl;\n          uniform float dt;\n      \n          void main () {\n              float L = texture2D(uCurl, vL).x;\n              float R = texture2D(uCurl, vR).x;\n              float T = texture2D(uCurl, vT).x;\n              float B = texture2D(uCurl, vB).x;\n              float C = texture2D(uCurl, vUv).x;\n      \n              vec2 force = 0.5 * vec2(abs(T) - abs(B), abs(R) - abs(L));\n              force /= length(force) + 0.0001;\n              force *= curl * C;\n              force.y *= -1.0;\n      \n              vec2 vel = texture2D(uVelocity, vUv).xy;\n              gl_FragColor = vec4(vel + force * dt, 0.0, 1.0);\n          }\n      ",
-                    pressure:
-                        "\n          precision mediump float;\n          precision mediump sampler2D;\n      \n          varying highp vec2 vUv;\n          varying highp vec2 vL;\n          varying highp vec2 vR;\n          varying highp vec2 vT;\n          varying highp vec2 vB;\n          uniform sampler2D uPressure;\n          uniform sampler2D uDivergence;\n      \n          vec2 boundary (vec2 uv) {\n              return uv;\n              // uncomment if you use wrap or repeat texture mode\n              // uv = min(max(uv, 0.0), 1.0);\n              // return uv;\n          }\n      \n          void main () {\n              float L = texture2D(uPressure, boundary(vL)).x;\n              float R = texture2D(uPressure, boundary(vR)).x;\n              float T = texture2D(uPressure, boundary(vT)).x;\n              float B = texture2D(uPressure, boundary(vB)).x;\n              float C = texture2D(uPressure, vUv).x;\n              float divergence = texture2D(uDivergence, vUv).x;\n              float pressure = (L + R + B + T - divergence) * 0.25;\n              gl_FragColor = vec4(pressure, 0.0, 0.0, 1.0);\n          }\n      ",
-                    gradientSubtract:
-                        "\n          precision mediump float;\n          precision mediump sampler2D;\n      \n          varying highp vec2 vUv;\n          varying highp vec2 vL;\n          varying highp vec2 vR;\n          varying highp vec2 vT;\n          varying highp vec2 vB;\n          uniform sampler2D uPressure;\n          uniform sampler2D uVelocity;\n      \n          vec2 boundary (vec2 uv) {\n              return uv;\n              // uv = min(max(uv, 0.0), 1.0);\n              // return uv;\n          }\n      \n          void main () {\n              float L = texture2D(uPressure, boundary(vL)).x;\n              float R = texture2D(uPressure, boundary(vR)).x;\n              float T = texture2D(uPressure, boundary(vT)).x;\n              float B = texture2D(uPressure, boundary(vB)).x;\n              vec2 velocity = texture2D(uVelocity, vUv).xy;\n              velocity.xy -= vec2(R - L, T - B);\n              gl_FragColor = vec4(velocity, 0.0, 1.0);\n          }\n      ",
+                    vertex: "",
+                    clear: "",
+                    color: "",
+                    background: "",
+                    display: "",
+                    displayBloom: "",
+                    displayShading: "",
+                    displayBloomShading: "",
+                    bloomPreFilter: "",
+                    bloomBlur: "",
+                    bloomFinal: "",
+                    splat: "",
+                    advectionManualFiltering: "",
+                    advection: "",
+                    divergence: "",
+                    curl: "",
+                    vorticity: "",
+                    pressure: "",
+                    gradientSubtract: "",
+                    balloon: ""
                 };
                 exports.SHADER_SOURCE = SHADER_SOURCE;
+
+                function loadShader() {
+                    const shaderFiles = [
+                        "advection.glsl",
+                        "advectionManualFiltering.glsl",
+                        "background.glsl",
+                        "bloomBlur.glsl",
+                        "bloomFinal.glsl",
+                        "bloomPreFilter.glsl",
+                        "clear.glsl",
+                        "color.glsl",
+                        "curl.glsl",
+                        "display.glsl",
+                        "displayBloom.glsl",
+                        "displayBloomShading.glsl",
+                        "displayShading.glsl",
+                        "divergence.glsl",
+                        "gradientSubtract.glsl",
+                        "pressure.glsl",
+                        "splat.glsl",
+                        "vorticity.glsl",
+                        "vertex.glsl",
+                        "balloon.glsl"
+
+                    ];
+
+                    // "shaders/" klasörünü baz alır.
+                    const basePath = "shaders/";
+
+                    // Her dosya için bir fetch promise'ı döndürüyoruz
+                    const promises = shaderFiles.map(fileName => {
+                        return fetch(basePath + fileName)
+                            .then(response => {
+                                if (!response.ok) {
+                                    throw new Error(`Shader dosyası yüklenemedi: ${fileName}`);
+                                }
+                                return response.text();
+                            })
+                            .then(shaderCode => {
+                                const key = fileName.replace(".glsl", "");
+                                SHADER_SOURCE[key] = shaderCode;
+                            });
+                    });
+
+                    // Tüm fetchler bitince Promise.all resolve olur
+                    return Promise.all(promises);
+                }
 
                 function setBehaviors(params) {exports.behavior = behavior = _objectSpread({}, behavior, {}, params);}
 
@@ -780,6 +835,10 @@
                             webGL.FRAGMENT_SHADER,
                             defualts.SHADER_SOURCE.gradientSubtract
                         ),
+                        balloon: compileShader(
+                            webGL.FRAGMENT_SHADER,
+                            defualts.SHADER_SOURCE.balloon
+                        )
                     };
                     var programs = formShaderPrograms(
                         colorFormats.supportLinearFiltering
@@ -1006,7 +1065,7 @@
                      *  displayBloomShadingProgram: GLProgram, gradientSubtractProgram: GLProgram, advectionProgram: GLProgram,
                      *  bloomBlurProgram: GLProgram, colorProgram: GLProgram, divergenceProgram: GLProgram, clearProgram: GLProgram,
                      *  splatProgram: GLProgram, displayProgram: GLProgram, bloomPreFilterProgram: GLProgram, curlProgram: GLProgram,
-                     *  bloomFinalProgram: GLProgram, pressureProgram: GLProgram, backgroundProgram: GLProgram}}:
+                     *  bloomFinalProgram: GLProgram, pressureProgram: GLProgram, backgroundProgram: GLProgram, balloonProgram: GLProgram}}:
                      */
                     function formShaderPrograms(supportLinearFiltering) {
                         return {
@@ -1131,6 +1190,12 @@
                                 SHADER.gradientSubtract,
                                 webGL
                             ),
+
+                            balloonProgram: new GLProgram(
+                                SHADER.baseVertex,
+                                SHADER.balloon,
+                                webGL
+                            )
                         };
                     }
                     return {
@@ -1229,7 +1294,28 @@
                      })();
 
 
-                 /**
+                     /**
+                      * smoothstep fonksiyonu, iki kenar değeri (edge0 ve edge1) arasında
+                      * yumuşak bir geçiş (interpolasyon) sağlar. Bu, grafik programlamada
+                      * sıkça kullanılan bir tekniktir ve genellikle shader'larda kullanılır.
+                      *
+                      * @param {number} edge0 - Geçişin başladığı kenar değeri.
+                      * @param {number} edge1 - Geçişin bittiği kenar değeri.
+                      * @param {number} x - Geçişin hesaplanacağı değer.
+                      * @returns {number} - 0 ile 1 arasında yumuşak geçiş değeri.
+                      */
+                     function smoothstep(edge0, edge1, x) {
+                         // x değerini [0, 1] aralığına sıkıştır (clamp).
+                         // Bu, x'in edge0 ve edge1 arasında normalleştirilmesini sağlar.
+                         x = Math.max(0, Math.min(1, (x - edge0) / (edge1 - edge0)));
+
+                         // Yumuşak geçişi hesapla. Bu, x'in karesini alıp (3 - 2 * x) ile çarparak
+                         // yumuşak bir eğri elde eder. Bu eğri, geçişin daha doğal görünmesini sağlar.
+                         return x * x * (3 - 2 * x);
+                     }
+
+
+                     /**
                      * LaunchBalloon fonksiyonu, verilen konumdan belirli sayıda (numParticles) ve hızda
                      * rastgele yönlerde parçacıklar "fırlatır". Bu parçacıklar 'splat' fonksiyonuyla simülasyona eklenir,
                      * böylece ekranda baloncuk efekti oluşur.
@@ -1244,6 +1330,13 @@
                         // Ekran boyutlarını al.
                         const canvasHeight = canvas.height;
                         const canvasWidth = canvas.width;
+
+                        // Balonun yarıçapı ve kenar yumuşatma değerleri
+                        const uRadius = 50;
+                        const uFeather = 30;
+
+                        // Pikselin balon merkezine uzaklığını hesapla
+                        const dist = Math.sqrt((x - canvasWidth / 2) ** 2 + (y - canvasHeight / 2) ** 2);
 
                         // %10'luk bir marjin alanı hesaplayarak balonların tamamen ekranın kenarına gitmesini engelliyoruz.
                         const minY = canvasHeight * 0.1;
@@ -1267,18 +1360,31 @@
                             // Parçacık rengi rastgele üretilen bir HSV renginin tamamlayıcı rengi olarak belirlenir.
                             const color = getComplementaryColor(generateColorHSV());
 
+                            // balonun şefaflığı için alpha değeri!.
+                            const alpha = 1.0 - smoothstep(uRadius - uFeather, uRadius, dist);
+
                             // Splat fonksiyonu parçacığı simülasyona ekler, böylece ekranda görünen akışkan
                             // bu parçacığın hız vektörüne ve rengine göre etkilenir.
-                            splat(x, y, dx, dy, color);
+                            splat(x, y, dx, dy, {...color, alpha});
                         }
 
-                        // Eğer burst true ise, 2 saniye sonra ek bir patlama dalgası daha yap.
+                         const gl = canvas.getContext('webgl2');
+
+                          gl.useProgram(PROGRAMS.balloonProgram.program);
+
+
+                         // Ekrana (ya da FBO’ya) çizeceğiz, blend ayarı vs.
+                         gl.enable(gl.BLEND);
+                         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+
+
+                         // Eğer burst true ise, 2 saniye sonra ek bir patlama dalgası daha yap.
                         // Bu ikinci patlama, sahnede daha yoğun bir etki yaratmak için kullanılabilir.
                         if (burst) {
                             setTimeout(() => {
                                 for (let i = 0; i < 100; i++) {
-                                    const angle = Math.random() * 2 * Math.PI;
-                                    const velocity = Math.random() * 3 + 1.0;
+                                    const angle = Math.random() * 4 * Math.PI;
+                                    const velocity = Math.random() * 6 + 6;
                                     const dx = Math.cos(angle) * velocity;
                                     const dy = Math.sin(angle) * velocity;
                                     const color = getComplementaryColor(generateColorHSV());
@@ -1287,6 +1393,7 @@
                             }, 2000); // 2 saniye bekledikten sonra patlama efekti eklenir.
                         }
                     }
+
 
                     /**
                      * ditheringTexture, dither efektinde kullanılacak texture'dır.
@@ -2665,6 +2772,7 @@
                             // Patlama particule sayısı (numParticles) ve hız (speed) rastgele seçilir.
                             const numParticles = Math.floor(Math.random() * 50) + 200; // 200 ile 250 arası partikül sayısı
                             const speed = Math.random() * 2 + 3; // Hız aralığı 3 ile 5 arasında
+
 
                             // Belirlenen noktada bir balon patlaması başlatır.
                             LaunchBalloon(x, y, numParticles, speed);
