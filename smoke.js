@@ -1316,86 +1316,86 @@
 
 
                      /**
-                     * LaunchBalloon fonksiyonu, verilen konumdan belirli sayıda (numParticles) ve hızda
-                     * rastgele yönlerde parçacıklar "fırlatır". Bu parçacıklar 'splat' fonksiyonuyla simülasyona eklenir,
-                     * böylece ekranda baloncuk efekti oluşur.
-                     *
-                     * @param {number} x - Başlangıç x koordinatı (piksel cinsinden, canvas alanı içinde).
-                     * @param {number} y - Başlangıç y koordinatı.
-                     * @param {number} numParticles - Oluşturulacak parçacık sayısı (varsayılan 100).
-                     * @param {number} speed - Parçacıkların temel hız değeri (varsayılan 4.0).
-                     * @param {boolean} burst - Eğer true ise, 2 saniye sonra ek bir patlama etkisi daha uygular.
-                     */
-                    function LaunchBalloon(x, y, numParticles = 100, speed = 4.0, burst = false) {
-                        // Ekran boyutlarını al.
-                        const canvasHeight = canvas.height;
-                        const canvasWidth = canvas.width;
+                      * LaunchBalloon fonksiyonu, verilen konumdan belirli sayıda (numParticles) ve hızda
+                      * parçacıklar "fırlatır". Bu parçacıklar 'splat' fonksiyonuyla simülasyona eklenir,
+                      * böylece ekranda baloncuk efekti oluşur.
+                      *
+                      * @param {number} x - Başlangıç x koordinatı (piksel cinsinden, canvas alanı içinde).
+                      * @param {number} y - Başlangıç y koordinatı.
+                      * @param {number} numParticles - Oluşturulacak parçacık sayısı (varsayılan 100).
+                      * @param {number} speed - Parçacıkların temel hız değeri (varsayılan 4.0).
+                      * @param {boolean} burst - Eğer true ise, 2 saniye sonra ek bir patlama etkisi daha uygular.
+                      */
+                     function LaunchBalloon(x, y, numParticles = 100, speed = 4.0, burst = false) {
+                         // Ekran boyutlarını al.
+                         const canvasHeight = canvas.height;
+                         const canvasWidth = canvas.width;
 
-                        // Balonun yarıçapı ve kenar yumuşatma değerleri
-                        const uRadius = 50;
-                        const uFeather = 30;
+                         // Balonun yarıçapı ve kenar yumuşatma değerleri
+                         const uRadius = 50;
+                         const uFeather = 30;
 
-                        // Pikselin balon merkezine uzaklığını hesapla
-                        const dist = Math.sqrt((x - canvasWidth / 2) ** 2 + (y - canvasHeight / 2) ** 2);
+                         // Pikselin balon merkezine uzaklığını hesapla
+                         const dist = Math.sqrt((x - canvasWidth / 2) ** 2 + (y - canvasHeight / 2) ** 2);
 
-                        // %10'luk bir marjin alanı hesaplayarak balonların tamamen ekranın kenarına gitmesini engelliyoruz.
-                        const minY = canvasHeight * 0.1;
-                        const maxY = canvasHeight * 0.9;
-                        const minX = canvasWidth * 0.1;
-                        const maxX = canvasWidth * 0.9;
+                         // %10'luk bir marjin alanı hesaplayarak balonların tamamen ekranın kenarına gitmesini engelliyoruz.
+                         const minY = canvasHeight * 0.1;
+                         const maxY = canvasHeight * 0.9;
+                         const minX = canvasWidth * 0.1;
+                         const maxX = canvasWidth * 0.9;
 
-                        // x ve y koordinatlarını %10 marjin içinde sınırlıyoruz.
-                        // Bu sayede baloncuklar ekranın tam kenarında oluşmak yerine bir miktar içeride kalırlar.
-                        x = Math.min(Math.max(x, minX), maxX);
-                        y = Math.min(Math.max(y, minY), maxY);
+                         // x ve y koordinatlarını %10 marjin içinde sınırlıyoruz.
+                         // Bu sayede baloncuklar ekranın tam kenarında oluşmak yerine bir miktar içeride kalırlar.
+                         x = Math.min(Math.max(x, minX), maxX);
+                         y = Math.min(Math.max(y, minY), maxY);
 
-                        // Her parçacık için rastgele bir açı ve hız belirlenir.
-                        // Bu sayede dairesel bir dağılım elde edilir (her yönde parçacık gider).
-                        for (let i = 0; i < numParticles; i++) {
-                            const angle = Math.random() * 2 * Math.PI; // 0'dan 2PI'a kadar rastgele açı (360 derece)
-                            const velocity = Math.random() * speed + 1.0; // Hız: 1.0 ile (speed+1.0) arası
-                            const dx = Math.cos(angle) * velocity;
-                            const dy = Math.sin(angle) * velocity;
+                         // %75 ihtimalle parçacıklar merkezi patlama yapar
+                         const centralExplosion = Math.random() < 0.75;
 
-                            // Parçacık rengi rastgele üretilen bir HSV renginin tamamlayıcı rengi olarak belirlenir.
-                            const color = getComplementaryColor(generateColorHSV());
+                         for (let i = 0; i < numParticles; i++) {
+                             let angle, velocity;
 
-                            // balonun şefaflığı için alpha değeri!.
-                            const alpha = 1.0 - smoothstep(uRadius - uFeather, uRadius, dist);
+                             // Simetrik bir yayılma için düzenleme
+                             angle = (i / numParticles) * 2 * Math.PI; // Parçacıklar eşit açılarla dağılır
+                             velocity = speed + Math.random() * speed * 0.3; // Hızlar daha kontrollü bir şekilde yayılır
 
-                            // Splat fonksiyonu parçacığı simülasyona ekler, böylece ekranda görünen akışkan
-                            // bu parçacığın hız vektörüne ve rengine göre etkilenir.
-                            splat(x, y, dx, dy, {...color, alpha});
-                        }
+                             const dx = Math.cos(angle) * velocity;
+                             const dy = Math.sin(angle) * velocity;
+
+                             // Parçacık rengi rastgele üretilen bir HSV renginin tamamlayıcı rengi olarak belirlenir.
+                             const color = getComplementaryColor(generateColorHSV());
+
+                             // Parçacığın şeffaflığı
+                             const alpha = 1.0 - smoothstep(uRadius - uFeather, uRadius, dist);
+
+                             // Splat fonksiyonu parçacığı simülasyona ekler
+                             splat(x, y, dx, dy, {...color, alpha});
+                         }
 
                          const gl = canvas.getContext('webgl2');
 
-                          gl.useProgram(PROGRAMS.balloonProgram.program);
+                         gl.useProgram(PROGRAMS.balloonProgram.program);
 
-
-                         // Ekrana (ya da FBO’ya) çizeceğiz, blend ayarı vs.
                          gl.enable(gl.BLEND);
                          gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-
                          // Eğer burst true ise, 2 saniye sonra ek bir patlama dalgası daha yap.
-                        // Bu ikinci patlama, sahnede daha yoğun bir etki yaratmak için kullanılabilir.
-                        if (burst) {
-                            setTimeout(() => {
-                                for (let i = 0; i < 100; i++) {
-                                    const angle = Math.random() * 4 * Math.PI;
-                                    const velocity = Math.random() * 6 + 6;
-                                    const dx = Math.cos(angle) * velocity;
-                                    const dy = Math.sin(angle) * velocity;
-                                    const color = getComplementaryColor(generateColorHSV());
-                                    splat(x, y, dx, dy, color);
-                                }
-                            }, 2000); // 2 saniye bekledikten sonra patlama efekti eklenir.
-                        }
-                    }
+                         if (burst) {
+                             setTimeout(() => {
+                                 for (let i = 0; i < numParticles; i++) {
+                                     const angle = (i / numParticles) * 2 * Math.PI; // Eşit açılarla dağılır
+                                     const velocity = speed * 1.5 + Math.random() * speed * 0.5; // Daha güçlü hızlar
+                                     const dx = Math.cos(angle) * velocity;
+                                     const dy = Math.sin(angle) * velocity;
+                                     const color = getComplementaryColor(generateColorHSV());
+                                     splat(x, y, dx, dy, {...color, alpha: 1.0}); // Daha güçlü renk ve opaklık
+                                 }
+                             }, 2000);
+                         }
+                     }
 
 
-                    /**
+                     /**
                      * ditheringTexture, dither efektinde kullanılacak texture'dır.
                      * Dither, renk geçişlerini yumuşatmak, bantlanmayı azaltmak için kullanılır.
                      * Eğer PARAMS.embedded_dither true ise gömülü dither resmi kullanılır,
@@ -2583,9 +2583,9 @@
                      *   v: Value (0.5 - 1.0 aralığında, yani renkler genelde parlak)
                      */
                     function generateColorHSV() {
-                        let h = Math.random();  // Hue için 0-1 arası rastgele değer, 0 ve 1 aynı renge (kırmızı) denk gelir
+                        let h = Math.random() * 0.2;  // Hue için 0-1 arası rastgele değer, 0 ve 1 aynı renge (kırmızı) denk gelir (0.2 ile çarpılır)
                         let s = 2.0;            // Saturation normalde 0-1 aralığına sığar, burada 2.0 ile aşırı doygun renkler tercih ediliyor
-                        let v = Math.random() * 0.5 + 0.5; // 0.5 ile 1.0 arasında parlaklık seçimi
+                        let v = Math.random() * 0.5 + 0.7; // 0.5 ile 1.0 arasında parlaklık seçimi
                         return { h, s, v };
                     }
 
