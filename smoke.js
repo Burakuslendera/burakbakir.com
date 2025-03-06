@@ -287,7 +287,7 @@
                         return fetch(basePath + fileName)
                             .then(response => {
                                 if (!response.ok) {
-                                    throw new Error(`Shader dosyası yüklenemedi: ${fileName}`);
+                                    throw new Error(`Could not load shader file: ${fileName}`);
                                 }
                                 return response.text();
                             })
@@ -990,7 +990,9 @@
                         webGL.compileShader(shader);
 
                         if (!webGL.getShaderParameter(shader, webGL.COMPILE_STATUS)) {
+                            const info = webGL.getShaderInfoLog(shader);
                             webGL.deleteShader(shader);
+                            throw new Error('Could not compile WebGL shader! \n\n' + info);
                         }
                         return shader;
                     }
