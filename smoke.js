@@ -1,31 +1,22 @@
 "use strict";
-
-(function webpackUniversalModuleDefinition(root, factory) {
+(function webpackUniversalModuleDefinition(root, factory, define) {
     if (typeof exports === "object" && typeof module === "object")
         module.exports = factory();
-    else if (typeof define === "function" && define.amd) define([], factory);
+    else if (typeof define === "function" && define["amd"]) define([], factory);
     else if (typeof exports === "object") exports["Smoke"] = factory();
     else root["Smoke"] = factory();
-})(window, function () {
+})(window, function (hsv) {
     return  (function (modules) {
-        // webpackBootstrap
-         // The module cache
-         var installedModules = {};
-
-         // The require function
+         const installedModules = {};
          function __webpack_require__(moduleId) {
-
-             // Check if module is in cache
              if (installedModules[moduleId]) {
                  return installedModules[moduleId].exports;
-
             }
 
-             var module = (installedModules[moduleId] = {
+             const module = (installedModules[moduleId] = {
                  i: moduleId,
                  l: false,
                  exports: {},
-
             });
 
 
@@ -36,27 +27,19 @@
                 __webpack_require__
             );
 
-
              module.l = true;
-
-
              return module.exports;
-
         }
 
          __webpack_require__.m = modules;
-
          __webpack_require__.c = installedModules;
-
          __webpack_require__.d = function (exports, name, getter) {
              if (!__webpack_require__.o(exports, name)) {
                  Object.defineProperty(exports, name, {
                     enumerable: true,
                     get: getter,
                 });
-
             }
-
         };
 
          __webpack_require__.r = function (exports) {
@@ -64,14 +47,12 @@
                  Object.defineProperty(exports, Symbol.toStringTag, {
                     value: "Module",
                 });
-
             }
              Object.defineProperty(exports, "__esModule", { value: true });
-
         };
          __webpack_require__.t = function (value, mode) {
-             if (mode & 1) value = __webpack_require__(value);
-             if (mode & 8) return value;
+             if (mode && 1) value = __webpack_require__(value);
+             if (mode && 8) return value;
              if (
                 mode & 4 &&
                 typeof value === "object" &&
@@ -79,14 +60,14 @@
                 value.__esModule
             )
                 return value;
-             var ns = Object.create(null);
+             const ns = Object.create(null);
              __webpack_require__.r(ns);
              Object.defineProperty(ns, "default", {
                 enumerable: true,
                 value: value,
             });
              if (mode & 2 && typeof value != "string")
-                for (var key in value)
+                for (let key in value)
                     __webpack_require__.d(
                         ns,
                         key,
@@ -109,7 +90,6 @@
                     };
              __webpack_require__.d(getter, "a", getter);
              return getter;
-
         };
 
          __webpack_require__.o = function (object, property) {
@@ -118,12 +98,9 @@
 
          __webpack_require__.p = "";
 
-
-
          return __webpack_require__(
             (__webpack_require__.s = "smoke.js")
         );
-
     })(
 
          {
@@ -131,19 +108,12 @@
             /*!***************************!*\
       !*** ./assets/dither.png ***!
       \***************************/
-
-            /***/ function (module, exports) {
-                module.exports =
-                    "data:image/png;base64,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";
-
-                /***/
-            },
-
-            /***/ "defualts.js":
-            /*!*************************!*\
-      !*** defualts.js ***!
-      \*************************/
-
+             /***/ function (module) {
+                 module.exports =
+                     "data:assets/image/png;base64,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";
+                 /***/
+             },
+            /***/ "defaults.js":
             /***/ function (module, exports, __webpack_require__) {
                 "use strict";
 
@@ -151,27 +121,15 @@
                     value: true,
                 });
                 exports.setBehaviors = setBehaviors;
-                // loadShader().then(() => {
-                //      // Burada SHADER_SOURCE artık yüklenmiş halde
-                //     console.log('Shaderlar yüklendi:', SHADER_SOURCE);
-                //
-                //     // WebGL veya Canvas kurulumu, shader compile vb.
-                //     const { programs, webGL, pointers } = initWebGL(canvas);
-                // });
-
-
                  loadShader()
                      .then(() => {
-                         console.log("Shader'lar yüklendi!");
-
-                         // 2) Ardından canvas'ı elde edip, Smoke nesnesini yarat
-                         const canvas = document.getElementById("renderSurface");
+                         console.log("shaders loaded!");
+                         const canvas = document.getElementById("rendersurface");
                          const smoke = new Smoke(canvas);
-
                          smoke.activate();
                      })
                      .catch(err => {
-                         console.error("Shader yüklenirken hata:", err);
+                         console.error("Error while loading shader:", err);
                      });
 
 
@@ -181,9 +139,9 @@
                             void 0;
 
                 function ownKeys(object, enumerableOnly) {
-                    var keys = Object.keys(object);
+                    const keys = Object.keys(object);
                     if (Object.getOwnPropertySymbols) {
-                        var symbols = Object.getOwnPropertySymbols(object);
+                        let symbols = Object.getOwnPropertySymbols(object);
                         if (enumerableOnly)
                             symbols = symbols.filter(function (sym) {
                                 return Object.getOwnPropertyDescriptor(
@@ -235,7 +193,7 @@
                     return obj;
                 }
 
-                var behavior = {
+                let behavior = {
                     sim_resolution: 128,
                     dye_resolution: 512,
                     paused: false,
@@ -259,11 +217,11 @@
                     threshold: 0.6,
                     soft_knee: 0.7,
 
-                    background_color: { r: 0, g: 0, b: 0 },
+                    background_color: { r: 0, g: 4, b: 33 },
                     transparent: false,
                 };
                 exports.behavior = behavior;
-                var DRAWING_PARAMS = {
+                 exports.DRAWING_PARAMS = {
                     alpha: true,
                     depth: false,
                     stencil: false,
@@ -271,8 +229,7 @@
                     preserveDrawingBuffer: false,
                     powerPreference: "default",
                 };
-                exports.DRAWING_PARAMS = DRAWING_PARAMS;
-                var SHADER_SOURCE = {
+                const SHADER_SOURCE = {
                     blank: "",
                     vertex: "",
                     clear: "",
@@ -360,18 +317,14 @@
       https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Constants
        */
 
-                var _defualts = __webpack_require__(
-                    /*! ./defualts */ "defualts.js"
-                );
+                const _defaults = __webpack_require__("defaults.js");
 
-                var _initializer = __webpack_require__(
-                    /*! ./initializer */ "initializer.js"
-                );
+                const _initializer = __webpack_require__("initializer.js");
 
                 function ownKeys(object, enumerableOnly) {
-                    var keys = Object.keys(object);
+                    const keys = Object.keys(object);
                     if (Object.getOwnPropertySymbols) {
-                        var symbols = Object.getOwnPropertySymbols(object);
+                        let symbols = Object.getOwnPropertySymbols(object);
                         if (enumerableOnly)
                             symbols = symbols.filter(function (sym) {
                                 return Object.getOwnPropertyDescriptor(
@@ -450,7 +403,7 @@
 
                     (function () {
                         function Smoke(canvas) {
-                            this.PARAMS = _defualts.behavior;
+                            this.PARAMS = _defaults.behavior;
 
                             _classCallCheck(this, Smoke);
 
@@ -459,13 +412,12 @@
                             canvas.height = canvas.clientHeight;
                             this.canvas = canvas;
 
-                            var _initWebGL = (0, _initializer.initWebGL)(),
-                                programs = _initWebGL.programs,
+                            const _initWebGL = (0, _initializer.initWebGL)(),
                                 webGL = _initWebGL.webGL,
                                 colorFormats = _initWebGL.colorFormats,
                                 pointers = _initWebGL.pointers;
 
-                            this.programs = programs;
+                            this.programs = _initWebGL.programs;
                             this.webGL = webGL;
                             this.colorFormats = colorFormats;
                             this.pointers = pointers;
@@ -508,7 +460,7 @@
                                 key: "mapBehaviors",
                                 value: function mapBehaviors(params) {
                                     this.PARAMS = _objectSpread({}, this.PARAMS, {}, params);
-                                    (0, _defualts.setBehaviors)(this.PARAMS);
+                                    (0, _defaults.setBehaviors)(this.PARAMS);
                                 },
                                 /**
                                  *
@@ -587,7 +539,7 @@
                                          *
                                          * @type {string}
                                          */
-                                        var gradient = "";
+                                        let gradient;
 
 
                                         switch (options) {
@@ -675,8 +627,8 @@
                 exports.activator = activator;
                 exports.setDitherURL = setDitherURL;
 
-                var defualts = _interopRequireWildcard(
-                    __webpack_require__(/*! ./defualts */ "defualts.js")
+                var defaults = _interopRequireWildcard(
+                    __webpack_require__(/*! ./defaults */ "defaults.js")
                 );
 
                 var dither = _interopRequireWildcard(
@@ -733,114 +685,113 @@
                     return Constructor;
                 }
 
-                var active = false;
-                var cancel = false;
-                var ditherURL = "./assets/dither.png";
+                 let active = false;
+                 let ditherURL = "./assets/dither.png";
                 function initWebGL() {
-                    var pointers = [];
+                    const pointers = [];
                     pointers.push(new Pointer());
 
-                    var webGL = canvas.getContext("webgl2", defualts.DRAWING_PARAMS);
-                    var isWebGL2 = !!webGL;
+                    let webGL = canvas.getContext("webgl2", defaults.DRAWING_PARAMS);
+                    const isWebGL2 = !!webGL;
                     if (!isWebGL2)
                         webGL =
-                            canvas.getContext("webgl", defualts.DRAWING_PARAMS) ||
+                            canvas.getContext("webgl", defaults.DRAWING_PARAMS) ||
                             canvas.getContext(
                                 "experimental-webgl",
-                                defualts.DRAWING_PARAMS
+                                defaults.DRAWING_PARAMS
                             );
 
                     let colorFormats = getFormats();
 
                     if (!colorFormats.supportLinearFiltering) {
-                        defualts.behavior.render_shaders = false;
-                        defualts.behavior.render_bloom = false;
+                        defaults.behavior.render_shaders = false;
+                        defaults.behavior.render_bloom = false;
                     }
 
 
                     let SHADER = {
                         baseVertex: compileShader(
                             webGL.VERTEX_SHADER,
-                            defualts.SHADER_SOURCE.vertex
+                            defaults.SHADER_SOURCE.vertex
                         ),
                         clear: compileShader(
                             webGL.FRAGMENT_SHADER,
-                            defualts.SHADER_SOURCE.clear
+                            defaults.SHADER_SOURCE.clear
                         ),
                         color: compileShader(
                             webGL.FRAGMENT_SHADER,
-                            defualts.SHADER_SOURCE.color
+                            defaults.SHADER_SOURCE.color
                         ),
                         background: compileShader(
                             webGL.FRAGMENT_SHADER,
-                            defualts.SHADER_SOURCE.background
+                            defaults.SHADER_SOURCE.background
                         ),
                         display: compileShader(
                             webGL.FRAGMENT_SHADER,
-                            defualts.SHADER_SOURCE.display
+                            defaults.SHADER_SOURCE.display
                         ),
                         displayBloom: compileShader(
                             webGL.FRAGMENT_SHADER,
-                            defualts.SHADER_SOURCE.displayBloom
+                            defaults.SHADER_SOURCE.displayBloom
                         ),
                         displayShading: compileShader(
                             webGL.FRAGMENT_SHADER,
-                            defualts.SHADER_SOURCE.displayShading
+                            defaults.SHADER_SOURCE.displayShading
                         ),
                         displayBloomShading: compileShader(
                             webGL.FRAGMENT_SHADER,
-                            defualts.SHADER_SOURCE.displayBloomShading
+                            defaults.SHADER_SOURCE.displayBloomShading
                         ),
                         bloomPreFilter: compileShader(
                             webGL.FRAGMENT_SHADER,
-                            defualts.SHADER_SOURCE.bloomPreFilter
+                            defaults.SHADER_SOURCE.bloomPreFilter
                         ),
                         bloomBlur: compileShader(
                             webGL.FRAGMENT_SHADER,
-                            defualts.SHADER_SOURCE.bloomBlur
+                            defaults.SHADER_SOURCE.bloomBlur
                         ),
                         bloomFinal: compileShader(
                             webGL.FRAGMENT_SHADER,
-                            defualts.SHADER_SOURCE.bloomFinal
+                            defaults.SHADER_SOURCE.bloomFinal
                         ),
                         splat: compileShader(
                             webGL.FRAGMENT_SHADER,
-                            defualts.SHADER_SOURCE.splat
+                            defaults.SHADER_SOURCE.splat
                         ),
                         advectionManualFiltering: compileShader(
                             webGL.FRAGMENT_SHADER,
-                            defualts.SHADER_SOURCE.advectionManualFiltering
+                            defaults.SHADER_SOURCE.advectionManualFiltering
                         ),
                         advection: compileShader(
                             webGL.FRAGMENT_SHADER,
-                            defualts.SHADER_SOURCE.advection
+                            defaults.SHADER_SOURCE.advection
                         ),
                         divergence: compileShader(
                             webGL.FRAGMENT_SHADER,
-                            defualts.SHADER_SOURCE.divergence
+                            defaults.SHADER_SOURCE.divergence
                         ),
                         curl: compileShader(
                             webGL.FRAGMENT_SHADER,
-                            defualts.SHADER_SOURCE.curl
+                            defaults.SHADER_SOURCE.curl
                         ),
                         vorticity: compileShader(
                             webGL.FRAGMENT_SHADER,
-                            defualts.SHADER_SOURCE.vorticity
+                            defaults.SHADER_SOURCE.vorticity
                         ),
                         pressure: compileShader(
                             webGL.FRAGMENT_SHADER,
-                            defualts.SHADER_SOURCE.pressure
+                            defaults.SHADER_SOURCE.pressure
                         ),
                         gradientSubtract: compileShader(
                             webGL.FRAGMENT_SHADER,
-                            defualts.SHADER_SOURCE.gradientSubtract
+                            defaults.SHADER_SOURCE.gradientSubtract
                         ),
                         balloon: compileShader(
                             webGL.FRAGMENT_SHADER,
-                            defualts.SHADER_SOURCE.balloon
+                            defaults.SHADER_SOURCE.balloon
                         )
                     };
-                    var programs = formShaderPrograms(
+                    const programs = formShaderPrograms(
                         colorFormats.supportLinearFiltering
                     );
                     /* Worker Classes and Functions */
@@ -852,9 +803,6 @@
                      * @returns {boolean}
                      */
 
-                    function isMobile() {
-                        return /Mobi|Android/i.test(navigator.userAgent);
-                    }
                     /**
                      * Biçimleri Al:
                      * Renk uzantılarını, doğrusal filtreleme uzantılarını etkinleştirin ve kullanılabilir renk biçimleri olan RGBA,
@@ -1037,16 +985,13 @@
                      */
 
                     function compileShader(type, source) {
-                        var shader = webGL.createShader(type);
+                        let shader = webGL.createShader(type);
                         webGL.shaderSource(shader, source);
                         webGL.compileShader(shader);
 
                         if (!webGL.getShaderParameter(shader, webGL.COMPILE_STATUS)) {
-                            const info = webGL.getShaderInfoLog(shader);
                             webGL.deleteShader(shader);
-                            throw new Error('Could not compile WebGL shader. \n\n' + info);
                         }
-
                         return shader;
                     }
 
@@ -1057,7 +1002,7 @@
                      * Bu sayede uygulama, gerekli olan tüm shader programlarına kolayca erişebilir.
                      * Her bir GLProgram, vertex ve fragment shader'ların birleşiminden oluşan bir programdır.
                      *
-                     * @param {boolean} supportLinearFiltering - GPU'nun lineer filtrelemeyi destekleyip desteklemediğini belirtir.
+                     * @param {OES_texture_half_float_linear} supportLinearFiltering - GPU'nun lineer filtrelemeyi destekleyip desteklemediğini belirtir.
                      *                                           Eğer true ise advection için normal gölgelendirici kullanılır,
                      *                                           aksi halde advectionManualFiltering gölgelendiricisi kullanılır.
                      *
@@ -1233,9 +1178,9 @@
                      // Simülasyonun aktif olduğunu belirtiyoruz.
                      active = true;
 
-                     // Davranış parametreleri defualts.behavior üzerinden alınıyor.
+                     // Davranış parametreleri defaults.behavior üzerinden alınıyor.
                      // Örneğin sim_resolution, dye_resolution, bloom_iterations gibi ayarlar burada olabilir.
-                     let PARAMS = defualts.behavior;
+                     let PARAMS = defaults.behavior;
 
                      // bloomFrameBuffers, splatStack, simWidth, simHeight, dyeWidth, dyeHeight,
                      // density, velocity, divergence, curl, pressure, bloom gibi değişkenler burada tanımlanarak
@@ -1332,8 +1277,14 @@
                          const canvasWidth = canvas.width;
 
                          // Balonun yarıçapı ve kenar yumuşatma değerleri
-                         const uRadius = 50;
-                         const uFeather = 30;
+                         let uRadius = 50;
+                         let uFeather = 30;
+
+                         // Eğer cihaz mobilse, balon boyutunu ekran oranına göre %75 küçült
+                         if (isMobile()) {
+                             uRadius *= 0.05;
+                             uFeather *= 0.05;
+                         }
 
                          // Pikselin balon merkezine uzaklığını hesapla
                          const dist = Math.sqrt((x - canvasWidth / 2) ** 2 + (y - canvasHeight / 2) ** 2);
@@ -1349,9 +1300,6 @@
                          x = Math.min(Math.max(x, minX), maxX);
                          y = Math.min(Math.max(y, minY), maxY);
 
-                         // %75 ihtimalle parçacıklar merkezi patlama yapar
-                         const centralExplosion = Math.random() < 0.75;
-
                          for (let i = 0; i < numParticles; i++) {
                              let angle, velocity;
 
@@ -1363,7 +1311,7 @@
                              const dy = Math.sin(angle) * velocity;
 
                              // Parçacık rengi rastgele üretilen bir HSV renginin tamamlayıcı rengi olarak belirlenir.
-                             const color = getComplementaryColor(generateColorHSV());
+                             const color = getComplementaryColor(hsv);
 
                              // Parçacığın şeffaflığı
                              const alpha = 1.0 - smoothstep(uRadius - uFeather, uRadius, dist);
@@ -1377,9 +1325,11 @@
                          gl.useProgram(PROGRAMS.balloonProgram.program);
 
                          gl.enable(gl.BLEND);
-                         gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-                         // Eğer burst true ise, 2 saniye sonra ek bir patlama dalgası daha yap.
+                         // Karışım fonksiyonlarını uygun şekilde yapılandırır
+                         gl.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
+
+                         // Eğer burst true ise, 2 saniye sonra ek bir patlama dalgası daha yapar.
                          if (burst) {
                              setTimeout(() => {
                                  for (let i = 0; i < numParticles; i++) {
@@ -1387,11 +1337,20 @@
                                      const velocity = speed * 1.5 + Math.random() * speed * 0.5; // Daha güçlü hızlar
                                      const dx = Math.cos(angle) * velocity;
                                      const dy = Math.sin(angle) * velocity;
-                                     const color = getComplementaryColor(generateColorHSV());
+                                     const color = getComplementaryColor(hsv);
                                      splat(x, y, dx, dy, {...color, alpha: 1.0}); // Daha güçlü renk ve opaklık
                                  }
                              }, 2000);
                          }
+                     }
+
+                     /**
+                      * Mobil cihaz kontrolü yapar.
+                      *
+                      * @returns {boolean} Kullanıcının mobil cihazda olup olmadığını belirtir.
+                      */
+                     function isMobile() {
+                         return /Mobi|Android/i.test(navigator.userAgent);
                      }
 
 
@@ -1790,7 +1749,7 @@
                         // clearProgram shader'ına uTexture adında bir uniform değişkenine 'target' (eski FBO) texture'ı bağlanıyor.
                         // target.attach(0), mevcut target FBO'nun texture'ını TEXTURE0 birimine atar ve shader'ın uTexture'u için kullanılır.
                         webGL.uniform1i(
-                            PROGRAMS.clearProgram.uniforms.uTexture,
+                            PROGRAMS.clearProgram.uniforms.texture,
                             target.attach(0)
                         );
 
@@ -1907,13 +1866,6 @@
                         // Daha sonra onload tetiklendiğinde texture güncellenecek!!!
                         return obj;
                     }
-                    function update() {
-                        resizeCanvas();
-                        input();
-                        if (!PARAMS.paused) step(0.016);
-                        render(null);
-                        return requestAnimationFrame(update);
-                    }
 
                     /**
                      * update fonksiyonu, her animasyon karesinde çağrılan temel döngüyü temsil eder.
@@ -1970,7 +1922,7 @@
                             // Tüm işaretçilerin rengini getComplementaryColor fonksiyonu kullanarak günceller.
                             for (let i = 0; i < pointers.length; i++) {
                                 const p = pointers[i];
-                                p.color = getComplementaryColor(getComplementaryColor());
+                                p.color = getComplementaryColor(getComplementaryColor(hsv));
                             }
                         }
                     }
@@ -2003,13 +1955,13 @@
                         // curlProgram: Hız alanının dönüşünü (curl) hesaplar.
                         PROGRAMS.curlProgram.bind();
                         webGL.uniform2f(
-                            PROGRAMS.curlProgram.uniforms.texelSize,
+                            PROGRAMS.curlProgram.uniforms.size,
                             1.0 / simWidth,
                             1.0 / simHeight
                         );
                         // uVelocity'ye mevcut hız alanını (velocity.read) bağlıyoruz.
                         webGL.uniform1i(
-                            PROGRAMS.curlProgram.uniforms.uVelocity,
+                            PROGRAMS.curlProgram.uniforms.velocity,
                             velocity.read.attach(0)
                         );
                         // curl.fbo içerisine curl değerleri hesaplanıp yazılıyor.
@@ -2019,16 +1971,16 @@
                         // vorticityProgram: Curl değerlerinden elde edilen kuvvetleri hız alanına uygular.
                         PROGRAMS.vorticityProgram.bind();
                         webGL.uniform2f(
-                            PROGRAMS.vorticityProgram.uniforms.texelSize,
+                            PROGRAMS.vorticityProgram.uniforms.size,
                             1.0 / simWidth,
                             1.0 / simHeight
                         );
                         webGL.uniform1i(
-                            PROGRAMS.vorticityProgram.uniforms.uVelocity,
+                            PROGRAMS.vorticityProgram.uniforms.velocity,
                             velocity.read.attach(0)
                         );
                         webGL.uniform1i(
-                            PROGRAMS.vorticityProgram.uniforms.uCurl,
+                            PROGRAMS.vorticityProgram.uniforms.curl,
                             curl.attach(1)
                         );
                         // 'curl' parametresi, akışın ne kadar kıvrılacağını kontrol eden bir katsayıdır.
@@ -2037,7 +1989,7 @@
                             PARAMS.curl
                         );
                         // Zaman adımı simülasyonun ne kadar ilerlediğini anlatır.
-                        webGL.uniform1f(PROGRAMS.vorticityProgram.uniforms.dt, dt);
+                        webGL.uniform1f(PROGRAMS.vorticityProgram.uniforms.t, dt);
                         // Hız alanını güncelledikten sonra velocity.write'a yazılır ve read/write değiş-tokuş yapılır.
                         blit(velocity.write.fbo);
                         velocity.swap();
@@ -2051,7 +2003,7 @@
                             1.0 / simHeight
                         );
                         webGL.uniform1i(
-                            PROGRAMS.divergenceProgram.uniforms.uVelocity,
+                            PROGRAMS.divergenceProgram.uniforms.velocity,
                             velocity.read.attach(0)
                         );
                         blit(divergence.fbo);
@@ -2594,7 +2546,7 @@
                      *
                      * Tamamlayıcı renk, renk tekerinde 180 derece zıt konumda olan renktir.
                      *
-                     * @param {{h: number, s: number, v: number}} hsv - HSV renk nesnesi
+                     * @param {{r: number, g: number, b: number}} hsv - HSV renk nesnesi
                      * @returns {{h: number, s: number, v: number}} Complementary HSV rengi
                      */
                     function getComplementaryHSV(hsv) {
@@ -2617,8 +2569,8 @@
                         let r, g, b;
                         // i: Hue'nun 6 ana renkten hangisine yakın olduğunu bulmak için kullanılır.
                         let i = Math.floor(h * 6);
-                        let f = h * 6 - i;       // Kesirli kısım
-                        let p = v * (1 - s);     // S doygunluğuna göre parlaklığı azaltan yardımcı değerler
+                        let f = h * 6 - i;
+                        let p = v * (1 - s);
                         let q = v * (1 - f * s);
                         let t = v * (1 - (1 - f) * s);
 
@@ -2808,34 +2760,6 @@
                             };
                     }
 
-                    /**
-                     * getResolution fonksiyonu, belirtilen bir temel çözünürlük değerini (resolution)
-                     * ekranın en-boy oranına (aspectRatio) göre uyarlayarak bir çözünürlük nesnesi döndürür.
-                     * Bu, farklı ekran boyutlarına uyum sağlamak için kullanılır.
-                     *
-                     * @param {number} resolution - Temel alınacak çözünürlük değeri.
-                     * @returns {{width: number, height: number}} En-boy oranına göre uyarlanmış çözünürlük.
-                     */
-                    function getResolution(resolution) {
-                        let aspectRatio = webGL.drawingBufferWidth / webGL.drawingBufferHeight;
-                        if (aspectRatio < 1) aspectRatio = 1.0 / aspectRatio;
-
-                        // aspectRatio'ya göre genişlik ve yükseklik hesapla.
-                        let max = Math.round(resolution * aspectRatio);
-                        let min = Math.round(resolution);
-
-                        // Ekranın yatay mı dikey mi daha geniş olduğuna göre width/height değerlerini ayarla.
-                        if (webGL.drawingBufferWidth > webGL.drawingBufferHeight)
-                            return {
-                                width: max,
-                                height: min,
-                            };
-                        else
-                            return {
-                                width: min,
-                                height: max,
-                            };
-                    }
                     canvas.addEventListener("mousemove", (e) => {
                         if (pointers.length > 0) {
                             const p = pointers[0];
@@ -2863,7 +2787,6 @@
                 }
 
                 const GLProgram =
-                    /*#__PURE__*/
                     (function () {
                         function GLProgram(vertexShader, fragmentShader, webGL) {
                             _classCallCheck(this, GLProgram);
@@ -2905,12 +2828,7 @@
 
                 let Pointer = function Pointer() {
                     _classCallCheck(this, Pointer);
-                    /**
-                     *
-                     *  @type {number} geçerli kimlikler her zaman sıfırdır veya pozitif bir tam sayıdır. ( -1 geçersizdir ve olmalıdır. Yeni bir işaretçi nesnesi oluşturulduğunda yönetilebilir.)
-                     *
-                     */
-                    /** İşaretçinin yatay (x) ve dikey (y) konumu
+                    /** İşaretçinin yatay (x) ve dikey (y) konumu!
                      *
                      *  @type {number}
                      */
@@ -2923,13 +2841,13 @@
                      */
                     this.dx = 0;
                     this.dy = 0;
-                    /** İşaretçinin tıklanmış durumda olup olmadığını ve/veya hareket halinde olup olmadığını depolamak için kullanılan Boolean veri üyesi
+                    /** İşaretçinin tıklanmış durumda olup olmadığını ve/veya hareket halinde olup olmadığını depolamak için kullanılan Boolean veri üyesi!
                      *
                      *
                      *  @type {boolean}
                      */
                     this.moved = false;
-                    /** İşaretçinin göstereceği renk!!
+                    /** İşaretçinin o anda göstereceği renk!!
                      *
                      * @type {number[]}
                      */
