@@ -1,134 +1,213 @@
 <!DOCTYPE html>
 <html lang="tr">
-<head>
+  <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, user-scalable=yes" />
     <title>Burak Bakır</title>
     <script src="smoke.js"></script>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM"
+      crossorigin="anonymous"
+    />
 
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-<canvas id="renderSurface"></canvas>
-<div class="centered-div" id="zoomContainer">
-    <h1>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <canvas id="renderSurface"></canvas>
+    <div class="centered-div" id="zoomContainer">
+      <h1>
         <a class="link-disabled" draggable="false">
-            <img src="https://readme-typing-svg.herokuapp.com?font=JetBrains+Mono&weight=600&size=35&duration=4000&pause=1000&color=FFFFFF&center=true&vCenter=true&width=435&lines=Hello%2C+Everyone!;+I'm+Burak+%F0%9F%91%8B"
-                 class="no-drag"
-                 alt="Typing SVG"/>
+          <img
+            src="https://readme-typing-svg.herokuapp.com?font=JetBrains+Mono&weight=600&size=35&duration=4000&pause=1000&color=FFFFFF&center=true&vCenter=true&width=435&lines=Hello%2C+Everyone!;+I'm+Burak+%F0%9F%91%8B"
+            class="no-drag"
+            alt="Typing SVG"
+          />
         </a>
-    </h1>
-    <hr>
-    <p class="content-text" style="font-size: 2.0rem; font-weight: bold">
+      </h1>
+      <hr />
+      <p class="content-text" style="font-size: 2rem; font-weight: bold">
         Merhaba Ben Burak!
-    </p>
-    <p class="content-text">
-        Şu anda 20 yaşındayım. Kendimi bu sektörde geliştirmek için her gün çalışıyorum.
-        Aslında bu sektöre girmeden önce, buraya nasıl geldiğimi anlatmak istiyorum.
-    </p>
-    <p class="content-text">
-        Bilgisayarla tanışma serüvenim 6 yaşında başladı. O zamanlar hep oyun oynar veya video izlerdim.
-        10. sınıfa kadar bu şekilde devam etti. Ancak 10. sınıfta, ekim ayında bir Discord sunucusuna katıldım.
-        Orada <a href="https://www.linkedin.com/in/batinay/" target="_blank" class="clickable-link">Batınay</a> ve
-        <a href="https://www.linkedin.com/in/ramazansancar/" target="_blank" class="clickable-link">Ramazan</a> ile tanıştım.
-        Onlar beni bu alana yönlendirdi ve "Boş boş pandemide oturacağına programlamaya başla." dediler.
-    </p>
-    <p class="content-text">
-        Zaten üniversitede bu alanı seçecektim, bu yüzden erkenden başlamanın iyi olacağını düşündüm.
-        Bu, programlamaya attığım ilk adımdı. O zamanlar sadece Java ile Minecraft modları yazıyordum,
-        ama bir yandan da C++ kullanarak programlama dillerini keşfediyordum. (İlk büyük projem, C++ ile <a href="https://osasazamegbe.medium.com/showing-building-an-http-server-from-scratch-in-c-2da7c0db6cb7" target="_blank" class="clickable-link">bir web sunucusu</a> geliştirmek oldu.)
-    </p>
-    <p class="content-text">
-        Sonrasında 12. sınıf oldum, YKS'ye başladım ve hazırlık yılı derken baştan
-        <a href="https://www.youtube.com/c/Gen%C3%A7ayY%C4%B1ld%C4%B1z" target="_blank" class="clickable-link">Gençay Yıldız</a>
-        hocamın C# videoları ile yazılıma tekrar başladım. Sonrasında HTML, CSS, TypeScript, Angular, .NET vb. teknolojilerle kendimi geliştirmeye devam ediyorum. Amacım backEnd developer olarak ilerlemek.
-    </p>
-    <p class="content-text">
-        Eğer bana hızlı bir şekilde ulaşmak istiyorsanız, Discord üzerinden daha hızlı yanıt alabilirsiniz!
-        (Discord ID: Burakuslendera)
-    </p>
-    <p class="content-text">
-        Projelerim genellikle gizli olur. Ancak bu sitenin kaynak kodları açık olacak.
-    </p>
-    <hr>
+      </p>
+      <p class="content-text">
+        Şu anda 20 yaşındayım. Kendimi bu sektörde geliştirmek için her gün
+        çalışıyorum. Aslında bu sektöre girmeden önce, buraya nasıl geldiğimi
+        anlatmak istiyorum.
+      </p>
+      <p class="content-text">
+        Bilgisayarla tanışma serüvenim 6 yaşında başladı. O zamanlar hep oyun
+        oynar veya video izlerdim. 10. sınıfa kadar bu şekilde devam etti. Ancak
+        10. sınıfta, ekim ayında bir Discord sunucusuna katıldım. Orada
+        <a
+          href="https://www.linkedin.com/in/batinay/"
+          target="_blank"
+          class="clickable-link"
+          >Batınay</a
+        >
+        ve
+        <a
+          href="https://www.linkedin.com/in/ramazansancar/"
+          target="_blank"
+          class="clickable-link"
+          >Ramazan</a
+        >
+        ile tanıştım. Onlar beni bu alana yönlendirdi ve "Boş boş pandemide
+        oturacağına programlamaya başla." dediler.
+      </p>
+      <p class="content-text">
+        Zaten üniversitede bu alanı seçecektim, bu yüzden erkenden başlamanın
+        iyi olacağını düşündüm. Bu, programlamaya attığım ilk adımdı. O zamanlar
+        sadece Java ile Minecraft modları yazıyordum, ama bir yandan da C++
+        kullanarak programlama dillerini keşfediyordum. (İlk büyük projem, C++
+        ile
+        <a
+          href="https://osasazamegbe.medium.com/showing-building-an-http-server-from-scratch-in-c-2da7c0db6cb7"
+          target="_blank"
+          class="clickable-link"
+          >bir web sunucusu</a
+        >
+        geliştirmek oldu.)
+      </p>
+      <p class="content-text">
+        Sonrasında 12. sınıf oldum, YKS'ye başladım ve hazırlık yılı derken
+        baştan
+        <a
+          href="https://www.youtube.com/c/Gen%C3%A7ayY%C4%B1ld%C4%B1z"
+          target="_blank"
+          class="clickable-link"
+          >Gençay Yıldız</a
+        >
+        hocamın C# videoları ile yazılıma tekrar başladım. Sonrasında HTML, CSS,
+        TypeScript, Angular, .NET vb. teknolojilerle kendimi geliştirmeye devam
+        ediyorum. Amacım backEnd developer olarak ilerlemek.
+      </p>
+      <p class="content-text">
+        Eğer bana hızlı bir şekilde ulaşmak istiyorsanız, Discord üzerinden daha
+        hızlı yanıt alabilirsiniz! (Discord ID: Burakuslendera)
+      </p>
+      <p class="content-text">
+        Projelerim genellikle gizli olur. Ancak bu sitenin kaynak kodları açık
+        olacak.
+      </p>
+      <hr />
 
-    <div class="main-container">
+      <div class="main-container">
         <div class="navigation-section">
-            <a href="#social" class="nav-button active" data-section="social">SOCIAL</a>
-            <a href="#projects" class="nav-button" data-section="projects">PROJECTS</a>
+          <a href="#social" class="nav-button active" data-section="social"
+            >SOCIAL</a
+          >
+          <a href="#projects" class="nav-button" data-section="projects"
+            >PROJECTS</a
+          >
         </div>
-        <hr>
+        <hr />
         <div class="content-section" id="social">
-            <div class="social-links">
-                <a href="https://www.linkedin.com/in/burakuslendera-burak-bakir/" target="_blank" class=" social-btn clickable-link">
-                    <img src="./img/linkedin.png" alt="LinkedIn">
-                </a>
-                <a href="https://github.com/burakuslendera" target="_blank" class="social-btn clickable-link">
-                    <img src="./img/github.png" alt="GitHub">
-                </a>
-                <a href="https://leetcode.com/u/Burakuslendera/" target="_blank" class="social-btn  clickable-link">
-                    <img src="./img/leetcode.png" alt="LeetCode">
-                </a>
-                <a href="https://open.spotify.com/user/21z5asbnio3i4fn7ophxfahcy" target="_blank" class="social-btn  clickable-link">
-                    <img src="./img/spotify.png" alt="Spotify">
-                </a>
-                <a href="https://steamcommunity.com/id/Burakuslendera/" target="_blank" class="social-btn  clickable-link">
-                    <img src="./img/steam.png" alt="Steam">
-                </a>
-                <a href="https://www.youtube.com/@Burakuslenderaa" target="_blank" class="social-btn  clickable-link">
-                    <img src="./img/youtube.png" alt="Youtube" class="youtubeImg">
-                </a>
-                <a href="https://x.com/Burakuslendera" target="_blank" class="social-btn  clickable-link">
-                    <img src="./img/x.png" alt="X">
-                </a>
-                <a href="https://www.instagram.com/burakuslendera/" target="_blank" class="social-btn  clickable-link" >
-                    <img src="./img/instagram.png" alt="Instagram" class="instagramImg">
-                </a>
-            </div>
-
+          <div class="social-links">
+            <a
+              href="https://www.linkedin.com/in/burakuslendera-burak-bakir/"
+              target="_blank"
+              class="social-btn clickable-link"
+            >
+              <img src="./img/linkedin.png" alt="LinkedIn" />
+            </a>
+            <a
+              href="https://github.com/burakuslendera"
+              target="_blank"
+              class="social-btn clickable-link"
+            >
+              <img src="./img/github.png" alt="GitHub" />
+            </a>
+            <a
+              href="https://leetcode.com/u/Burakuslendera/"
+              target="_blank"
+              class="social-btn clickable-link"
+            >
+              <img src="./img/leetcode.png" alt="LeetCode" />
+            </a>
+            <a
+              href="https://open.spotify.com/user/21z5asbnio3i4fn7ophxfahcy"
+              target="_blank"
+              class="social-btn clickable-link"
+            >
+              <img src="./img/spotify.png" alt="Spotify" />
+            </a>
+            <a
+              href="https://steamcommunity.com/id/Burakuslendera/"
+              target="_blank"
+              class="social-btn clickable-link"
+            >
+              <img src="./img/steam.png" alt="Steam" />
+            </a>
+            <a
+              href="https://www.youtube.com/@Burakuslenderaa"
+              target="_blank"
+              class="social-btn clickable-link"
+            >
+              <img src="./img/youtube.png" alt="Youtube" class="youtubeImg" />
+            </a>
+            <a
+              href="https://x.com/Burakuslendera"
+              target="_blank"
+              class="social-btn clickable-link"
+            >
+              <img src="./img/x.png" alt="X" />
+            </a>
+            <a
+              href="https://www.instagram.com/burakuslendera/"
+              target="_blank"
+              class="social-btn clickable-link"
+            >
+              <img
+                src="./img/instagram.png"
+                alt="Instagram"
+                class="instagramImg"
+              />
+            </a>
+          </div>
         </div>
-        <div class="content-section" id="sites" style="display: none;">
-
+        <div class="content-section" id="sites" style="display: none"></div>
+        <div class="content-section" id="projects" style="display: none">
+          <p class="content-text">
+            Genellikle açık kaynak yapmam fakat açık kaynak yaptıklarımı
+            ekleyecem.
+          </p>
         </div>
-        <div class="content-section" id="projects" style="display: none;">
-            <p class="content-text">Genellikle açık kaynak yapmam fakat açık kaynak yaptıklarımı ekleyecem.</p>
-        </div>
+      </div>
     </div>
-</div>
-<script src="deviceScale.js"></script>
-<script>
-    document.querySelectorAll('.nav-button').forEach(button => {
-        button.addEventListener('click', (event) => {
-            event.preventDefault();
+    <script src="deviceScale.js"></script>
+    <script>
+      document.querySelectorAll(".nav-button").forEach(button => {
+        button.addEventListener("click", event => {
+          event.preventDefault();
 
-            document.querySelector('.nav-button.active').classList.remove('active');
-            button.classList.add('active');
+          document
+            .querySelector(".nav-button.active")
+            .classList.remove("active");
+          button.classList.add("active");
 
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.style.display = 'none';
-            });
+          document.querySelectorAll(".content-section").forEach(section => {
+            section.style.display = "none";
+          });
 
-            const sectionId = button.getAttribute('data-section');
-            document.getElementById(sectionId).style.display = 'block';
+          const sectionId = button.getAttribute("data-section");
+          document.getElementById(sectionId).style.display = "block";
         });
-    });
+      });
 
-
-    document.querySelectorAll('.link-disabled').forEach(link => {
-        link.addEventListener('click', event => {
-            event.preventDefault();
-            event.stopPropagation();
+      document.querySelectorAll(".link-disabled").forEach(link => {
+        link.addEventListener("click", event => {
+          event.preventDefault();
+          event.stopPropagation();
         });
-    });
+      });
 
-    const canvas = document.getElementById("renderSurface");
+      const canvas = document.getElementById("renderSurface");
 
-    const smoke = new Smoke(canvas);
+      const smoke = new Smoke(canvas);
 
-    smoke.activate();
-
-</script>
-</body>
+      smoke.activate();
+    </script>
+  </body>
 </html>
