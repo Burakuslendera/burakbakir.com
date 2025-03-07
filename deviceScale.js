@@ -6,14 +6,21 @@
     const container = document.getElementById("zoomContainer");
     const canvas = document.getElementById("renderSurface");
     const centeredDiv = document.querySelector(".centered-div");
+
+    const init = () => {
+      setTimeout(scaleContent, 100);
+      window.addEventListener("resize", scaleContent);
+      window.addEventListener("orientationchange", scaleContent);
+    };
+
     const width = window.innerWidth;
     const height = window.innerHeight;
 
+    const fixedSize = "1300px";
     let designWidth = 2000,
       designHeight = 1500,
       baseWidth,
       baseHeight;
-    const fixedSize = "1300px";
 
     if (isPhone && !(width > 1280 && height >= 800)) {
       baseWidth = 1622;

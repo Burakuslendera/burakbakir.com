@@ -350,8 +350,8 @@
 
             _classCallCheck(this, Smoke);
 
-            canvas.width = canvas.clientWidth;
-            canvas.height = canvas.clientHeight;
+            canvas.width = window.width;
+            canvas.height = window.height;
             this.canvas = canvas;
 
             const _initWebGL = (0, _initializer.initWebGL)(),
