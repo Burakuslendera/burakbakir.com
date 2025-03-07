@@ -1,4 +1,4 @@
-precision highp float;
+﻿precision highp float;
 precision highp sampler2D;
 
 varying vec2 vUv;

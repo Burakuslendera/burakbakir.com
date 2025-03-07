@@ -1,4 +1,4 @@
-precision highp float;
+﻿precision highp float;
 
 attribute vec2 aPosition;
 varying vec2 vUv;
