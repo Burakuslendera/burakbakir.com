@@ -52,7 +52,7 @@
 
       if (window.devicePixelRatio > 1) {
         canvas.width = canvas.offsetWidth * 2; canvas.height = canvas.offsetHeight * 2;
-        if (canvas.getContext("2d")) canvas.getContext("2d").scale(16, 16);
+        if (canvas.getContext("2d")) canvas.getContext("2d").scale(4, 4);
       }
       else { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
     };
