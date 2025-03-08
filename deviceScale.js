@@ -17,7 +17,7 @@
         baseHeight;
 
     if (isPhone && !(width > 1280 && height >= 800)) {
-      baseWidth = 3192; baseHeight = 2893;
+      baseWidth = 4192; baseHeight = 2893;
       if (centeredDiv) {
         centeredDiv.style.maxWidth = fixedSize;
         centeredDiv.style.minWidth = fixedSize;
