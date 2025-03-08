@@ -7,25 +7,23 @@
     const canvas = document.getElementById("renderSurface");
     const centeredDiv = document.querySelector(".centered-div");
 
-    const init = () => {
-      setTimeout(scaleContent, 100);
-      window.addEventListener("resize", scaleContent);
-      window.addEventListener("orientationchange", scaleContent);
-    };
-
     const width = window.innerWidth;
     const height = window.innerHeight;
 
     const fixedSize = "1300px";
     let designWidth = 2000,
-      designHeight = 1500,
-      baseWidth,
-      baseHeight;
+        designHeight = 1500,
+        baseWidth,
+        baseHeight;
 
     if (isPhone && !(width > 1280 && height >= 800)) {
-      baseWidth = 1622; baseHeight = 2893;
+      baseWidth = 3192; baseHeight = 2893;
+      if (centeredDiv) {
+        centeredDiv.style.maxWidth = fixedSize;
+        centeredDiv.style.minWidth = fixedSize;
+      }
     } else {
-      baseWidth = 3072;
+      baseWidth = 4096;
       baseHeight = 1280;
       if (centeredDiv) {
         centeredDiv.style.maxWidth = fixedSize;

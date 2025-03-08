@@ -191,7 +191,7 @@
         threshold: 0.6,
         soft_knee: 0.7,
 
-        background_color: { r: 0, g: 0, b: 0 },
+        background_color: { r: 0, g: 4, b: 33 },
         transparent: false,
       };
       exports.behavior = behavior;
