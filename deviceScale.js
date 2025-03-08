@@ -1,7 +1,7 @@
 (function () {
   function scaleContent() {
     const isPhone = /Android|iPhone|Tablet|iPad|/i.test(navigator.userAgent);
-    const isZFlipDevice = /SM-F7\d+/i.test(navigator.userAgent);
+    const isZFlipDevice = /SM-F7\d+/i.test(navigator.userAgent); // Z fold ?? Fuck OFF!!!!
 
     const container = document.getElementById("zoomContainer");
     const canvas = document.getElementById("renderSurface");
@@ -24,7 +24,11 @@
       }
     }
     else if (isZFlipDevice) {
-      baseWidth = 2893; baseHeight = 4096;
+      baseWidth = 2893; baseHeight = 2000;
+      // Okay z Flip :/
+      document.querySelector("meta[name=viewport]").setAttribute(
+          'content',
+          'width=device-width, initial-scale=1.4, maximum-scale=1.4');
       if (centeredDiv) {
         centeredDiv.style.maxWidth = fixedSize;
         centeredDiv.style.minWidth = fixedSize;
@@ -35,7 +39,7 @@
       baseHeight = 1280;
       document.querySelector("meta[name=viewport]").setAttribute(
           'content',
-          'width=device-width, initial-scale=1.05, maximum-scale=1.07');
+          'initial-scale=0.9, maximum-scale=0.9');
       if (centeredDiv) {
         centeredDiv.style.maxWidth = fixedSize;
         centeredDiv.style.minWidth = fixedSize;
@@ -62,6 +66,7 @@
       const scale = Math.min(scaleW, scaleH);
 
       container.style.transform = `translate(-50%, -50%) scale(${scale})`;
+
     };
 
     setCanvasDimensions();
