@@ -1,6 +1,6 @@
 (function () {
   function scaleContent() {
-    const isPhone = /Android|iPhone|Tablet|iPad|/i.test(navigator.userAgent);
+    const isPhone = /Android|iPhone|/i.test(navigator.userAgent);
     const isZFlipDevice = /SM-F7\d+/i.test(navigator.userAgent); // Z fold ?? Fuck OFF!!!!
 
     const container = document.getElementById("zoomContainer");
@@ -16,7 +16,7 @@
         baseWidth,
         baseHeight;
 
-    if (isPhone && !(width > 1280 && height >= 800)) {
+    if (isPhone) {
       baseWidth = 4096; baseHeight = 1280;
       if (centeredDiv) {
         centeredDiv.style.maxWidth = fixedSize;
@@ -51,8 +51,8 @@
       canvas.style.height = window.innerHeight + "px";
 
       if (window.devicePixelRatio > 1) {
-        canvas.width = canvas.offsetWidth * 2; canvas.height = canvas.offsetHeight * 2;
-        if (canvas.getContext("2d")) canvas.getContext("2d").scale(64, 64);
+        canvas.width = Math.imul(canvas.offsetWidth, 2); canvas.height = Math.imul(canvas.offsetHeight, 2);
+        if (canvas.getContext("2d")) canvas.getContext("2d").scale(256, 256);
       }
       else { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
     };
