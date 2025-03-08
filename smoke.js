@@ -1288,7 +1288,8 @@
 
           init();
 
-          StartBaloon();
+          setTimeout(StartBaloon, 3000); // 3 sec
+
 
           var lastColorChangeTime = Date.now(); // Son renk değiştirme zamanını tutar.
 

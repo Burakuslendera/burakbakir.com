@@ -1,7 +1,7 @@
 (function () {
   function scaleContent() {
-    const userAgent = navigator.userAgent;
-    const isPhone = /Android|iPhone|Tablet|iPad|/i.test(userAgent);
+    const isPhone = /Android|iPhone|Tablet|iPad|/i.test(navigator.userAgent);
+    const isZFlipDevice = /SM-F7\d+/i.test(navigator.userAgent);
 
     const container = document.getElementById("zoomContainer");
     const canvas = document.getElementById("renderSurface");
@@ -22,9 +22,20 @@
         centeredDiv.style.maxWidth = fixedSize;
         centeredDiv.style.minWidth = fixedSize;
       }
-    } else {
+    }
+    else if (isZFlipDevice) {
+      baseWidth = 2893; baseHeight = 4096;
+      if (centeredDiv) {
+        centeredDiv.style.maxWidth = fixedSize;
+        centeredDiv.style.minWidth = fixedSize;
+      }
+    }
+    else {
       baseWidth = 4096;
       baseHeight = 1280;
+      document.querySelector("meta[name=viewport]").setAttribute(
+          'content',
+          'width=device-width, initial-scale=1.05, maximum-scale=1.07');
       if (centeredDiv) {
         centeredDiv.style.maxWidth = fixedSize;
         centeredDiv.style.minWidth = fixedSize;
@@ -36,21 +47,18 @@
       canvas.style.height = window.innerHeight + "px";
 
       if (window.devicePixelRatio > 1) {
-        canvas.width = canvas.offsetWidth * 2;
-        canvas.height = canvas.offsetHeight * 2;
+        canvas.width = canvas.offsetWidth * 2; canvas.height = canvas.offsetHeight * 2;
         if (canvas.getContext("2d")) canvas.getContext("2d").scale(16, 16);
-      } else {
-        canvas.width = canvas.offsetWidth;
-        canvas.height = canvas.offsetHeight;
       }
+      else { canvas.width = canvas.offsetWidth; canvas.height = canvas.offsetHeight; }
     };
 
     const updateContainerScale = () => {
       container.style.width = designWidth + "px";
       container.style.height = designHeight + "px";
 
-      const scaleW = window.innerWidth / baseWidth;
-      const scaleH = window.innerHeight / baseHeight;
+      const scaleW = Math.imul(window.innerWidth,  1.2 ) / baseWidth;
+      const scaleH = Math.imul(window.innerHeight, 1.2) / baseHeight;
       const scale = Math.min(scaleW, scaleH);
 
       container.style.transform = `translate(-50%, -50%) scale(${scale})`;
