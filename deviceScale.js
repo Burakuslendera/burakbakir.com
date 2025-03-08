@@ -17,7 +17,7 @@
         baseHeight;
 
     if (isPhone && !(width > 1280 && height >= 800)) {
-      baseWidth = 4096; baseHeight = 2893;
+      baseWidth = 4096; baseHeight = 1280;
       if (centeredDiv) {
         centeredDiv.style.maxWidth = fixedSize;
         centeredDiv.style.minWidth = fixedSize;
@@ -39,7 +39,7 @@
       baseHeight = 1280;
       document.querySelector("meta[name=viewport]").setAttribute(
           'content',
-          'initial-scale=0.9, maximum-scale=0.9');
+          'initial-scale=1.7, maximum-scale=1.7');
       if (centeredDiv) {
         centeredDiv.style.maxWidth = fixedSize;
         centeredDiv.style.minWidth = fixedSize;
@@ -66,6 +66,7 @@
       const scale = Math.min(scaleW, scaleH);
 
       container.style.transform = `translate(-50%, -50%) scale(${scale})`;
+      if (isZFlipDevice) container.style.transform = `translate(0%, 0%) scale(${scale})`;
 
     };
 
