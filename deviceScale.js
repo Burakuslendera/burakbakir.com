@@ -131,10 +131,9 @@
       }
 
       // Safari'de font boyutunu ayarla
-      if (isSafari && (isIOS || ua.includes("Mac"))) {
-        let htmlElement = document.querySelector("html");
-        htmlElement.style.fontSize = 8 / scale + "px"; // 8 = Safari için özelleştirilmiş font boyutu
-      }
+      if (isSafari && (isIOS || ua.includes("Mac")))
+        document.querySelector("html").style.fontSize = 6 / scale + "px"; // 6 = Safari için özelleştirilmiş font boyutu (önceden 8 idi)
+      
     };
 
     setCanvasDimensions();
