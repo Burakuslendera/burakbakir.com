@@ -41,8 +41,8 @@
     if (isIOS || isSafari) {
       baseWidth = 4096;
       baseHeight = 1280;
-      designWidth = 1130;
-      designHeight = 1779;
+      designWidth = 1730;
+      designHeight = 2379;
     } else if (isZFlipDevice) {
       baseWidth = 2893;
       baseHeight = 2000;
