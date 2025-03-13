@@ -5,7 +5,7 @@
       ua.includes("Safari") &&
       !ua.includes("Chrome") &&
       !ua.includes("CriOS") &&
-      !ua.includes("FxiOS");  // Safari Scale Problem ?? Fuck
+      !ua.includes("FxiOS"); // Safari Scale Problem ?? Fuck
     const isIOS = /iPhone|iPad|iPod/i.test(ua);
     const isPhone = /Android|iPhone|/i.test(ua);
     const isZFlipDevice = /SM-F7\d+/i.test(ua); // Z fold ?? Fuck OFF!!!!
@@ -128,6 +128,13 @@
       if (isZFlipDevice) {
         container.style.transform = `translate(0%, 0%) scale(${scale})`;
         container.style.webkitTransform = `translate(0%, 0%) scale3d(${scale}, ${scale}, 1)`;
+      }
+
+      // Safari'de font boyutunu ayarla
+      if (isSafari && (isIOS || ua.includes("Mac"))) {
+        var htmlElement = document.querySelector("html");
+        var desiredFontSize = 16; // İstenen görüntülenen font boyutunu buradan ayarlayabilirsiniz (örneğin 16px)
+        htmlElement.style.fontSize = desiredFontSize / scale + "px";
       }
     };
 
