@@ -38,7 +38,7 @@
       }
     }
 
-    if (isIOS || isSafari) {
+    if (isIOS) {
       baseWidth = 4096;
       baseHeight = 1280;
       designWidth = 1730;
@@ -140,7 +140,7 @@
         container.style.webkitTransform = `translate(-50%, -50%) scale3d(${scale}, ${scale}, 1)`;
       }
       document.querySelector(".link-disabled img").style.transform = `scale(${
-        scale * 2.7
+        scale * 3
       })`;
 
       // Safari'de font boyutunu ayarla
@@ -154,9 +154,6 @@
         );
       } else if (isPhone || isZFlipDevice) {
         document.querySelector("html").style.fontSize = 6 / scale + "px"; // 6 = Safari için özelleştirilmiş font boyutu
-        document.querySelector(".link-disabled img").style.transform = `scale(${
-            scale * 2
-        })`;
       }
     };
 
