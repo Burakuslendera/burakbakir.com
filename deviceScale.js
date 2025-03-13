@@ -132,9 +132,8 @@
 
       // Safari'de font boyutunu ayarla
       if (isSafari && (isIOS || ua.includes("Mac"))) {
-        var htmlElement = document.querySelector("html");
-        var desiredFontSize = 16; // İstenen görüntülenen font boyutunu buradan ayarlayabilirsiniz (örneğin 16px)
-        htmlElement.style.fontSize = desiredFontSize / scale + "px";
+        let htmlElement = document.querySelector("html");
+        htmlElement.style.fontSize = 8 / scale + "px"; // 8 = Safari için özelleştirilmiş font boyutu
       }
     };
 
