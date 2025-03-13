@@ -42,7 +42,7 @@
       baseWidth = 4096;
       baseHeight = 1280;
       designWidth = 1730;
-      designHeight = 2879;
+      designHeight = 3290;
     }
     else if (isZFlipDevice) {
       baseWidth = 2893;
