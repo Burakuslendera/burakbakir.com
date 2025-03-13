@@ -14,9 +14,6 @@
     const canvas = document.getElementById("renderSurface");
     const centeredDiv = document.querySelector(".centered-div");
 
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-
     const fixedSize = "1300px";
     let designWidth = 2000,
       designHeight = 1500,
@@ -33,7 +30,7 @@
             "content",
             "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"
           );
-      } else {
+      } else if (/mac/i.test(ua) || isIOS) {
         // macOS Safari
         document
           .querySelector("meta[name=viewport]")
@@ -41,13 +38,11 @@
       }
     }
 
-    if (isPhone && !isZFlipDevice) {
+    if (isIOS || isSafari) {
       baseWidth = 4096;
       baseHeight = 1280;
-      if (centeredDiv) {
-        centeredDiv.style.maxWidth = fixedSize;
-        centeredDiv.style.minWidth = fixedSize;
-      }
+      designWidth = 2100;
+      designHeight = 3892;
     } else if (isZFlipDevice) {
       baseWidth = 2893;
       baseHeight = 2000;
@@ -58,6 +53,13 @@
           "content",
           "width=device-width, initial-scale=1.4, maximum-scale=1.4"
         );
+      if (centeredDiv) {
+        centeredDiv.style.maxWidth = fixedSize;
+        centeredDiv.style.minWidth = fixedSize;
+      }
+    } else if (isPhone) {
+      baseWidth = 4096;
+      baseHeight = 1280;
       if (centeredDiv) {
         centeredDiv.style.maxWidth = fixedSize;
         centeredDiv.style.minWidth = fixedSize;
@@ -123,17 +125,37 @@
       const scale = Math.min(scaleW, scaleH);
 
       // Uygulanan transform değerine Safari için 3D ekle (GPU katmanı oluşturur)
-      container.style.transform = `translate(-50%, -50%) scale(${scale})`;
-      container.style.webkitTransform = `translate(-50%, -50%) scale3d(${scale}, ${scale}, 1)`;
-      if (isZFlipDevice) {
+      if (isIOS || ua.includes("Mac")) {
+        container.style.transform = `translate(-50%, -50%) scale(${
+          scale * 1.05
+        })`;
+        container.style.webkitTransform = `translate(-50%, -50%) scale3d(${
+          scale * 1.05
+        }, ${scale * 1.05}, 1)`;
+      } else if (isZFlipDevice) {
         container.style.transform = `translate(0%, 0%) scale(${scale})`;
         container.style.webkitTransform = `translate(0%, 0%) scale3d(${scale}, ${scale}, 1)`;
+      } else {
+        container.style.transform = `translate(-50%, -50%) scale(${scale * 3})`;
+        container.style.webkitTransform = `translate(-50%, -50%) scale3d(${
+          scale * 1.2
+        }, ${scale * 1.2}, 1)`;
       }
+      document.querySelector(".link-disabled img").style.transform = `scale(${
+        scale * 2.7
+      })`;
 
       // Safari'de font boyutunu ayarla
-      if (isSafari && (isIOS || ua.includes("Mac")))
-        document.querySelector("html").style.fontSize = 6 / scale + "px"; // 6 = Safari için özelleştirilmiş font boyutu (önceden 8 idi)
-      
+      if (isSafari && (isIOS || ua.includes("Mac"))) {
+        let html = document.querySelector("html");
+        html.style.fontSize = 5.4 / scale + "px"; // 6 = Safari için özelleştirilmiş font boyutu
+        document.querySelector(".link-disabled img").style.transform = `scale(${
+          scale * 5
+        })`;
+        document.querySelector(
+          ".link-disabled img"
+        ).style.webkitTransform = `scale3d(${scale * 5}, ${scale * 5}, 1)`;
+      }
     };
 
     setCanvasDimensions();
@@ -144,15 +166,7 @@
     scaleContent();
     window.addEventListener("resize", scaleContent);
     window.addEventListener("orientationchange", function () {
-      // Safari'de orientationchange sonrasında ölçümlerde gecikme olabiliyor
-      if (
-        /iPhone|iPad|iPod/i.test(navigator.userAgent) &&
-        /^((?!chrome).)*safari/i.test(navigator.userAgent)
-      ) {
-        setTimeout(scaleContent, 300);
-      } else {
-        scaleContent();
-      }
+      setTimeout(scaleContent, 300);
     });
   };
 
