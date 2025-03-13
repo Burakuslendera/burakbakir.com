@@ -16,7 +16,7 @@
 
     const fixedSize = "1300px";
     let designWidth = 2000,
-      designHeight = 1500,
+      designHeight = 1700,
       baseWidth,
       baseHeight;
 
@@ -41,8 +41,8 @@
     if (isIOS || isSafari) {
       baseWidth = 4096;
       baseHeight = 1280;
-      designWidth = 2100;
-      designHeight = 3892;
+      designWidth = 1130;
+      designHeight = 1779;
     } else if (isZFlipDevice) {
       baseWidth = 2893;
       baseHeight = 2000;
@@ -70,7 +70,7 @@
       document
         .querySelector("meta[name=viewport]")
         .setAttribute("content", "initial-scale=1.7, maximum-scale=1.7");
-      if (centeredDiv) {
+      if (centeredDiv && fixedSize > designHeight) {
         centeredDiv.style.maxWidth = fixedSize;
         centeredDiv.style.minWidth = fixedSize;
       }
@@ -136,10 +136,8 @@
         container.style.transform = `translate(0%, 0%) scale(${scale})`;
         container.style.webkitTransform = `translate(0%, 0%) scale3d(${scale}, ${scale}, 1)`;
       } else {
-        container.style.transform = `translate(-50%, -50%) scale(${scale * 3})`;
-        container.style.webkitTransform = `translate(-50%, -50%) scale3d(${
-          scale * 1.2
-        }, ${scale * 1.2}, 1)`;
+        container.style.transform = `translate(-50%, -50%) scale(${scale})`;
+        container.style.webkitTransform = `translate(-50%, -50%) scale3d(${scale}, ${scale}, 1)`;
       }
       document.querySelector(".link-disabled img").style.transform = `scale(${
         scale * 2.7
@@ -147,19 +145,23 @@
 
       // Safari'de font boyutunu ayarla
       if (isSafari && (isIOS || ua.includes("Mac"))) {
-        let html = document.querySelector("html");
-        html.style.fontSize = 5.4 / scale + "px"; // 6 = Safari için özelleştirilmiş font boyutu
+        document.querySelector("html").style.fontSize = 5.4 / scale + "px"; // 6 = Safari için özelleştirilmiş font boyutu
         document.querySelector(".link-disabled img").style.transform = `scale(${
           scale * 5
         })`;
         document.querySelector(
           ".link-disabled img"
-        ).style.webkitTransform = `scale3d(${scale * 5}, ${scale * 5}, 1)`;
+        );
+      } else if (isPhone || isZFlipDevice) {
+        document.querySelector("html").style.fontSize = 6 / scale + "px"; // 6 = Safari için özelleştirilmiş font boyutu
+        document.querySelector(".link-disabled img").style.transform = `scale(${
+            scale * 2
+        })`;
       }
     };
 
     setCanvasDimensions();
-    updateContainerScale();
+    (updateContainerScale())();
   }
 
   const init = () => {
