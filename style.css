@@ -57,7 +57,7 @@ html {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px 0;
+  padding: 10px 20px;
   font-size: 1.7rem;
   font-weight: bold;
 }
@@ -153,13 +153,6 @@ html {
   padding: 8px;
 }
 
-hr {
-  box-shadow: 0 0 10px #8b00ff, 0 0 30px rgba(139, 0, 255, 1);
-  background-color: #8b00ff;
-  height: 1px;
-  border: 10px;
-  transform: scaleY(3.2);
-}
 .social-btn img {
   width: 52px;
   height: 52px;

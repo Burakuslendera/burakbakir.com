@@ -120,8 +120,8 @@
       container.style.width = designWidth + "px";
       container.style.height = designHeight + "px";
 
-      const scaleW = Math.imul(window.innerWidth, 1.2) / baseWidth;
-      const scaleH = Math.imul(window.innerHeight, 1.2) / baseHeight;
+      const scaleW = Math.imul(window.innerWidth, 1.3) / baseWidth;
+      const scaleH = Math.imul(window.innerHeight, 1.3) / baseHeight;
       const scale = Math.min(scaleW, scaleH);
 
       // Uygulanan transform değerine Safari için 3D ekle (GPU katmanı oluşturur)
