@@ -1,5 +1,7 @@
 const userAgent = navigator.userAgent;
-const isMobile = /Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+const isMobile = /Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(
+  userAgent
+);
 const isSafari = /^((?!chrome|android).)*safari/i.test(userAgent);
 const isIOS = /iPad|iPhone|iPod/.test(userAgent);
 const isZFlip = /SM-F[0-9]{3,}/i.test(userAgent);
@@ -12,7 +14,7 @@ function setCenteredWindowSize() {
   const windowWidth = window.innerWidth;
   const windowHeight = window.innerHeight;
 
-  let scaleFactor;
+  let scaleFactor = 0;
 
   // NOTE: This scaling format works stably for iPhone devices! //
   if (isIOS) {
@@ -64,9 +66,9 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
 
     if (isIOS || (isSafari && !isMac)) {
       baseWidth = 4196;
-      baseHeight = 2180;
+      baseHeight = 3180;
       designWidth = 1830;
-      designHeight = 4000;
+      designHeight = 5000;
     } else if (isZFlip) {
       baseWidth = 2893;
       baseHeight = 2000;
@@ -108,7 +110,7 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
     if (isSafari)
       document.documentElement.style.setProperty(
         "-webkit-text-size-adjust",
-        "100%"
+        "90%"
       );
 
     // Fix orientation zoom issue in iOS Safari :/
@@ -158,12 +160,8 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
       let html = document.querySelector("html");
 
       if (isSafari) {
-        container.style.transform = `translate(-50%, -50%) scale(${
-          scale * 1.05
-        })`;
-        container.style.webkitTransform = `translate(-50%, -50%) scale3d(${
-          scale * 1.05
-        }, ${scale * 1.05}, 1)`;
+        container.style.transform = `translate(-50%, -50%) scale(${scale})`;
+        container.style.webkitTransform = `translate(-50%, -50%) scale3d(${scale}, ${scale}, 1)`;
         linkDisabledImg.style.transform = `scale(${scale * 16})`;
       } else if (isZFlip) {
         container.style.transform = `translate(0%, 0%) scale(${scale * 1.3})`;
