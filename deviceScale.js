@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
       baseWidth = 4196;
       baseHeight = 3180;
       designWidth = 1830;
-      designHeight = 5000;
+      designHeight = 4500;
     } else if (isZFlip) {
       baseWidth = 2893;
       baseHeight = 2000;
