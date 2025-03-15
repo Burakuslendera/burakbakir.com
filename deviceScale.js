@@ -1,9 +1,9 @@
-const isMobile = /Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(
-  navigator.userAgent
-);
-const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-const isZFlip = /SM-F[0-9]{3,}/i.test(navigator.userAgent);
+const userAgent = navigator.userAgent;
+const isMobile = /Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(userAgent);
+const isSafari = /^((?!chrome|android).)*safari/i.test(userAgent);
+const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+const isZFlip = /SM-F[0-9]{3,}/i.test(userAgent);
+const isMac = /mac/i.test(userAgent);
 
 function setCenteredWindowSize() {
   const centeredWindow = document.getElementById("centered-window");
@@ -16,8 +16,10 @@ function setCenteredWindowSize() {
 
   // NOTE: This scaling format works stably for iPhone devices! //
   if (isIOS) {
-      scaleFactor = Math.min(windowWidth / 320, windowHeight / 64);
-    console.error(" NOTE： This scaling format works stably for iPhone devices!");
+    scaleFactor = Math.min(windowWidth / 320, windowHeight / 64);
+    console.error(
+      " NOTE： This scaling format works stably for iPhone devices!"
+    );
     centeredWindow.style.transform = `scale(${scaleFactor})`;
   }
 
@@ -53,18 +55,18 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
             "content",
             "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"
           );
-      } else if (/mac/i.test(ua)) {
+      } else if (isMac) {
         document
           .querySelector("meta[name=viewport]")
           .setAttribute("content", "initial-scale=1.7, maximum-scale=1.7");
       }
     }
 
-    if (isIOS || (isSafari && !/mac/i.test(ua))) {
+    if (isIOS || (isSafari && !isMac)) {
       baseWidth = 4196;
-      baseHeight = 2080;
+      baseHeight = 2180;
       designWidth = 1830;
-      designHeight = 4590;
+      designHeight = 4000;
     } else if (isZFlip) {
       baseWidth = 2893;
       baseHeight = 2000;
@@ -155,7 +157,7 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
       let linkDisabledImg = document.querySelector(".link-disabled img");
       let html = document.querySelector("html");
 
-      if (isIOS) {
+      if (isSafari) {
         container.style.transform = `translate(-50%, -50%) scale(${
           scale * 1.05
         })`;
@@ -164,16 +166,27 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
         }, ${scale * 1.05}, 1)`;
         linkDisabledImg.style.transform = `scale(${scale * 16})`;
       } else if (isZFlip) {
-        container.style.transform = `translate(0%, 0%) scale(${scale})`;
-        container.style.webkitTransform = `translate(0%, 0%) scale3d(${scale}, ${scale}, 1)`;
+        container.style.transform = `translate(0%, 0%) scale(${scale * 1.3})`;
+        container.style.webkitTransform = `translate(0%, 0%) scale3d(${
+          scale * 1.3
+        }, ${scale * 1.3}, 1)`;
         linkDisabledImg.style.transform = `scale(${scale * 14})`;
-      } else if (isMobile) {
-        container.style.transform = `translate(-50%, -50%) scale(${scale})`;
-        container.style.webkitTransform = `translate(-50%, -50%) scale3d(${scale}, ${scale}, 1)`;
+      } else if (isMobile || isIOS) {
+        container.style.transform = `translate(-50%, -50%) scale(${
+          scale * 0.9
+        })`;
+        container.style.webkitTransform = `translate(-50%, -50%) scale3d(${
+          scale * 0.9
+        }, ${scale * 0.9}, 1)`;
         linkDisabledImg.style.transform = `scale(${scale * 4})`;
+        if (isIOS) linkDisabledImg.style.transform = `scale(${scale * 16})`;
       } else {
-        container.style.transform = `translate(-50%, -50%) scale(${scale * 0.7})`;
-        container.style.webkitTransform = `translate(-50%, -50%) scale3d(${scale * 0.7}, ${scale * 0.7}, 1)`;
+        container.style.transform = `translate(-50%, -50%) scale(${
+          scale * 0.8
+        })`;
+        container.style.webkitTransform = `translate(-50%, -50%) scale3d(${
+          scale * 0.8
+        }, ${scale * 0.8}, 1)`;
         linkDisabledImg.style.transform = `scale(${scale * 3})`;
       }
 
@@ -199,7 +212,7 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
         });
       }
 
-      if (isSafari && (isIOS || ua.includes("Mac")))
+      if (isSafari && (isIOS || isMac))
         html.style.fontSize = 4.7545 / scale + "px";
     };
     setCanvasDimensions();
