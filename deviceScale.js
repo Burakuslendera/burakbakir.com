@@ -171,11 +171,11 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
         linkDisabledImg.style.transform = `scale(${scale * 14})`;
       } else if (isMobile || isIOS) {
         container.style.transform = `translate(-50%, -50%) scale(${
-          scale * 0.9
+          scale * 1.2
         })`;
         container.style.webkitTransform = `translate(-50%, -50%) scale3d(${
-          scale * 0.9
-        }, ${scale * 0.9}, 1)`;
+          scale * 1.2
+        }, ${scale * 1.2}, 1)`;
         linkDisabledImg.style.transform = `scale(${scale * 4})`;
         if (isIOS) linkDisabledImg.style.transform = `scale(${scale * 16})`;
       } else {
