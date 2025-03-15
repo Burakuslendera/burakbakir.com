@@ -1,53 +1,74 @@
+const isMobile = /Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(
+  navigator.userAgent
+);
+const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+const isZFlip = /SM-F[0-9]{3,}/i.test(navigator.userAgent);
+
+function setCenteredWindowSize() {
+  const centeredWindow = document.getElementById("centered-window");
+  // if (!centeredWindow) return reportError();
+
+  const windowWidth = window.innerWidth;
+  const windowHeight = window.innerHeight;
+
+  let scaleFactor;
+
+  // NOTE: This scaling format works stably for iPhone devices! //
+  if (isIOS) {
+      scaleFactor = Math.min(windowWidth / 320, windowHeight / 64);
+    console.error(" NOTE： This scaling format works stably for iPhone devices!");
+    centeredWindow.style.transform = `scale(${scaleFactor})`;
+  }
+
+  if (isSafari || isIOS) {
+    const meta = document.createElement("meta");
+    meta.name = "viewport";
+    meta.content =
+      "width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no";
+    document.head.appendChild(meta);
+  }
+  window.addEventListener("resize", setCenteredWindowSize);
+}
+
+document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
+
 (function () {
   function scaleContent() {
     const ua = navigator.userAgent;
-    const isSafari =
-      ua.includes("Safari") &&
-      !ua.includes("Chrome") &&
-      !ua.includes("CriOS") &&
-      !ua.includes("FxiOS"); // Safari Scale Problem ?? Fuck
-    const isIOS = /iPhone|iPad|iPod/i.test(ua);
-    const isPhone = /Android|iPhone|/i.test(ua);
-    const isZFlipDevice = /SM-F7\d+/i.test(ua); // Z fold ?? Fuck OFF!!!!
-
     const container = document.getElementById("zoomContainer");
     const canvas = document.getElementById("renderSurface");
     const centeredDiv = document.querySelector(".centered-div");
-
     const fixedSize = "1300px";
-    let designWidth = 2000,
-      designHeight = 1700,
-      baseWidth,
-      baseHeight;
 
-    // Safari :/
+    let designWidth = 2000,
+      designHeight = 1700;
+    let baseWidth, baseHeight;
+
     if (isSafari) {
       if (isIOS) {
-        // iPhone/iPad Safari
         document
           .querySelector("meta[name=viewport]")
           .setAttribute(
             "content",
             "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"
           );
-      } else if (/mac/i.test(ua) || isIOS) {
-        // macOS Safari
+      } else if (/mac/i.test(ua)) {
         document
           .querySelector("meta[name=viewport]")
           .setAttribute("content", "initial-scale=1.7, maximum-scale=1.7");
       }
     }
 
-    if (isIOS || isSafari && !/mac/i.test(ua)) {
-      baseWidth = 4096;
-      baseHeight = 1280;
-      designWidth = 1730;
-      designHeight = 3290;
-    }
-    else if (isZFlipDevice) {
+    if (isIOS || (isSafari && !/mac/i.test(ua))) {
+      baseWidth = 4196;
+      baseHeight = 2080;
+      designWidth = 1830;
+      designHeight = 4590;
+    } else if (isZFlip) {
       baseWidth = 2893;
       baseHeight = 2000;
-      // Okay z Flip :/
+      // Fuck Off! Z-Flip
       document
         .querySelector("meta[name=viewport]")
         .setAttribute(
@@ -58,34 +79,37 @@
         centeredDiv.style.maxWidth = fixedSize;
         centeredDiv.style.minWidth = fixedSize;
       }
-    } else if (isPhone) {
+    } else if (isMobile) {
       baseWidth = 4096;
       baseHeight = 1280;
+      designWidth = 700;
+      designHeight = 1568;
       if (centeredDiv) {
         centeredDiv.style.maxWidth = fixedSize;
         centeredDiv.style.minWidth = fixedSize;
       }
     } else {
-      baseWidth = 4096;
-      baseHeight = 1280;
+      baseWidth = 1280;
+      baseHeight = 720;
+      designWidth = 600;
+      designHeight = 1580;
       document
         .querySelector("meta[name=viewport]")
-        .setAttribute("content", "initial-scale=1.7, maximum-scale=1.7");
-      if (centeredDiv && fixedSize > designHeight) {
+        .setAttribute("content", "initial-scale=1, maximum-scale=1");
+      if (centeredDiv) {
         centeredDiv.style.maxWidth = fixedSize;
         centeredDiv.style.minWidth = fixedSize;
       }
     }
 
-    // Disable Safari's automatic text-size adjustment
-    if (isSafari) {
+    // Disable Safari's automatic text size adjustment!
+    if (isSafari)
       document.documentElement.style.setProperty(
         "-webkit-text-size-adjust",
         "100%"
       );
-    }
 
-    // Fix orientation zoom issues on iOS Safari using gesturestart event (only for iOS)
+    // Fix orientation zoom issue in iOS Safari :/
     if (isSafari && isIOS) {
       document.addEventListener(
         "gesturestart",
@@ -106,7 +130,6 @@
     const setCanvasDimensions = () => {
       canvas.style.width = window.innerWidth + "px";
       canvas.style.height = window.innerHeight + "px";
-
       if (window.devicePixelRatio > 1) {
         canvas.width = Math.imul(canvas.offsetWidth, 2);
         canvas.height = Math.imul(canvas.offsetHeight, 2);
@@ -123,43 +146,64 @@
 
       const scaleW = Math.imul(window.innerWidth, 1.3) / baseWidth;
       const scaleH = Math.imul(window.innerHeight, 1.3) / baseHeight;
-      const scale = Math.min(scaleW, scaleH);
+      let scale = Math.min(scaleW, scaleH);
 
-      // Uygulanan transform değerine Safari için 3D ekle (GPU katmanı oluşturur)
-      if (isIOS || ua.includes("Mac")) {
+      const fitScaleW = window.innerWidth / designWidth;
+      const fitScaleH = window.innerHeight / designHeight;
+      scale = Math.min(scale, fitScaleW, fitScaleH);
+
+      let linkDisabledImg = document.querySelector(".link-disabled img");
+      let html = document.querySelector("html");
+
+      if (isIOS) {
         container.style.transform = `translate(-50%, -50%) scale(${
           scale * 1.05
         })`;
         container.style.webkitTransform = `translate(-50%, -50%) scale3d(${
           scale * 1.05
         }, ${scale * 1.05}, 1)`;
-      } else if (isZFlipDevice) {
+        linkDisabledImg.style.transform = `scale(${scale * 16})`;
+      } else if (isZFlip) {
         container.style.transform = `translate(0%, 0%) scale(${scale})`;
         container.style.webkitTransform = `translate(0%, 0%) scale3d(${scale}, ${scale}, 1)`;
-      } else {
+        linkDisabledImg.style.transform = `scale(${scale * 14})`;
+      } else if (isMobile) {
         container.style.transform = `translate(-50%, -50%) scale(${scale})`;
         container.style.webkitTransform = `translate(-50%, -50%) scale3d(${scale}, ${scale}, 1)`;
+        linkDisabledImg.style.transform = `scale(${scale * 4})`;
+      } else {
+        container.style.transform = `translate(-50%, -50%) scale(${scale * 0.7})`;
+        container.style.webkitTransform = `translate(-50%, -50%) scale3d(${scale * 0.7}, ${scale * 0.7}, 1)`;
+        linkDisabledImg.style.transform = `scale(${scale * 3})`;
       }
-      document.querySelector(".link-disabled img").style.transform = `scale(${
-        scale * 3
-      })`;
 
-      // Safari'de font boyutunu ayarla
-      if (isSafari && (isIOS || ua.includes("Mac"))) {
-        document.querySelector("html").style.fontSize = 5.4 / scale + "px"; // 6 = Safari için özelleştirilmiş font boyutu
-        document.querySelector(".link-disabled img").style.transform = `scale(${
-          scale * 5
-        })`;
-        document.querySelector(
-          ".link-disabled img"
+      if (isIOS) {
+        document
+          .querySelectorAll(".social-links img")
+          .forEach(img => (img.style.transform = `scale(${scale * 6})`));
+
+        // (ileride ekleyeceğim projelerde resim olur büyük ihtimalle :) )
+        // const projectLinkImages = document.querySelectorAll("#projects a img");
+        // projectLinkImages.forEach(img => {
+        //   img.style.transform = `scale(${scale * 6})`;
+        // });
+
+        const socialButtons = document.querySelectorAll(
+          ".social-links a.social-btn"
         );
-      } else if (isPhone || isZFlipDevice) {
-        document.querySelector("html").style.fontSize = 6 / scale + "px"; // 6 = Safari için özelleştirilmiş font boyutu
+        socialButtons.forEach(btn => {
+          btn.style.transform = `scale(${scale * 18})`;
+          btn.style.marginRight = 96 + "px";
+          btn.style.marginLeft = 96 + "px";
+          btn.style.marginTop = 128 + "px";
+        });
       }
-    };
 
+      if (isSafari && (isIOS || ua.includes("Mac")))
+        html.style.fontSize = 4.7545 / scale + "px";
+    };
     setCanvasDimensions();
-    (updateContainerScale())();
+    updateContainerScale();
   }
 
   const init = () => {
@@ -169,6 +213,5 @@
       setTimeout(scaleContent, 300);
     });
   };
-
   window.addEventListener("load", init);
 })();

@@ -118,6 +118,7 @@ html {
 }
 
 .link-disabled {
+  margin-top: 20px;
   pointer-events: none;
   cursor: default;
   display: flex;
@@ -147,7 +148,7 @@ html {
   background: black;
   border-radius: 24px;
   margin-right: 16px;
-  margin-bottom: 16px;
+  margin-bottom: 24px;
   box-shadow: 0 0 20px #8b00ff, 0 0 30px rgba(141, 0, 255, 0.8);
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   padding: 8px;
