@@ -185,6 +185,8 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
         linkDisabledImg.style.marginTop = 32 + "px";
       }
 
+      if ((isMac && isSafari) || /iPad/.test(userAgent)) linkDisabledImg.style.transform = `scale(${scale * 0.2})`;
+
       if (isIOS) {
 
         let meta = document.querySelector("meta[name=viewport]");
@@ -216,7 +218,7 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
 
         container.style.transform = `translate(-50%, -50%) scale(1)`;
         container.style.webkitTransform = `translate(-50%, -50%) scale3d(1, 1, 1)`;
-        linkDisabledImg.style.transform = `scale(${scale * 0.5})`;
+        linkDisabledImg.style.transform = `scale(${scale * 0.3})`;
 
         document.querySelector(".social-links").style.gap = '6px';
 
