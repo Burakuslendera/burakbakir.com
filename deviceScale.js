@@ -175,11 +175,11 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
         if (isIOS) linkDisabledImg.style.transform = `scale(${scale * 16})`;
       } else {
         container.style.transform = `translate(-50%, -50%) scale(${
-            scale * 0.7
+            scale * 0.624
         })`;
         container.style.webkitTransform = `translate(-50%, -50%) scale3d(${
-            scale * 0.7
-        }, ${scale * 0.7}, 1)`;
+            scale * 0.624
+        }, ${scale * 0.624}, 1)`;
         linkDisabledImg.style.transform = `scale(${scale * 3})`;
       }
 
@@ -243,7 +243,7 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
           });
         }
       }
-      if ( isIOS || isSafari && !isMac) html.style.fontSize = 5 / scale + "px";
+      if ( isIOS || isSafari && !isMac || /iPad/.test(userAgent)) html.style.fontSize = 5 / scale + "px";
     };
     setCanvasDimensions();
     updateContainerScale();
