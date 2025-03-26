@@ -1,6 +1,6 @@
 const userAgent = navigator.userAgent;
 const isMobile = /Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(
-  userAgent
+    userAgent
 );
 const isSafari = /^((?!chrome|android).)*safari/i.test(userAgent);
 const isIOS = /iPad|iPhone|iPod/.test(userAgent);
@@ -8,28 +8,24 @@ const isZFlip = /SM-F[0-9]{3,}/i.test(userAgent);
 const isMac = /mac/i.test(userAgent);
 
 function setCenteredWindowSize() {
-  const centeredWindow = document.getElementById("centered-window");
-  // if (!centeredWindow) return reportError();
-
+  const zoomContainer = document.getElementById("zoomContainer");
   const windowWidth = window.innerWidth;
   const windowHeight = window.innerHeight;
 
-  let scaleFactor = 0;
-
-  // NOTE: This scaling format works stably for iPhone devices! //
   if (isIOS) {
-    scaleFactor = Math.min(windowWidth / 320, windowHeight / 64);
-    console.error(
-      " NOTE： This scaling format works stably for iPhone devices!"
-    );
-    centeredWindow.style.transform = `scale(${scaleFactor})`;
+    zoomContainer.style.width = windowWidth + "px";
+    zoomContainer.style.height = windowHeight + "px";
+    zoomContainer.style.transform = "none";
+  } else {
+    let scaleFactor = Math.min(windowWidth / 320, windowHeight / 64);
+    zoomContainer.style.transform = `scale(${scaleFactor})`;
   }
 
   if (isSafari || isIOS) {
     const meta = document.createElement("meta");
     meta.name = "viewport";
     meta.content =
-      "width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no";
+        "width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no";
     document.head.appendChild(meta);
   }
   window.addEventListener("resize", setCenteredWindowSize);
@@ -39,46 +35,45 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
 
 (function () {
   function scaleContent() {
-    const ua = navigator.userAgent;
     const container = document.getElementById("zoomContainer");
     const canvas = document.getElementById("renderSurface");
     const centeredDiv = document.querySelector(".centered-div");
     const fixedSize = "1300px";
 
     let designWidth = 2000,
-      designHeight = 1700;
+        designHeight = 1700;
     let baseWidth, baseHeight;
 
     if (isSafari) {
       if (isIOS) {
         document
-          .querySelector("meta[name=viewport]")
-          .setAttribute(
-            "content",
-            "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"
-          );
+            .querySelector("meta[name=viewport]")
+            .setAttribute(
+                "content",
+                "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"
+            );
       } else if (isMac) {
         document
-          .querySelector("meta[name=viewport]")
-          .setAttribute("content", "initial-scale=1.7, maximum-scale=1.7");
+            .querySelector("meta[name=viewport]")
+            .setAttribute("content", "initial-scale=1.7, maximum-scale=1.7");
       }
     }
 
     if (isIOS || (isSafari && !isMac)) {
-      baseWidth = 4196;
-      baseHeight = 3180;
-      designWidth = 1830;
-      designHeight = 4500;
+      baseWidth = window.innerWidth;
+      baseHeight = window.innerHeight;
+      designWidth = window.innerWidth;
+      designHeight = window.innerHeight;
     } else if (isZFlip) {
       baseWidth = 2893;
       baseHeight = 2000;
       // Fuck Off! Z-Flip
       document
-        .querySelector("meta[name=viewport]")
-        .setAttribute(
-          "content",
-          "width=device-width, initial-scale=1.4, maximum-scale=1.4"
-        );
+          .querySelector("meta[name=viewport]")
+          .setAttribute(
+              "content",
+              "width=device-width, initial-scale=1.4, maximum-scale=1.4"
+          );
       if (centeredDiv) {
         centeredDiv.style.maxWidth = fixedSize;
         centeredDiv.style.minWidth = fixedSize;
@@ -98,8 +93,8 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
       designWidth = 600;
       designHeight = 1580;
       document
-        .querySelector("meta[name=viewport]")
-        .setAttribute("content", "initial-scale=1, maximum-scale=1");
+          .querySelector("meta[name=viewport]")
+          .setAttribute("content", "initial-scale=1, maximum-scale=1");
       if (centeredDiv) {
         centeredDiv.style.maxWidth = fixedSize;
         centeredDiv.style.minWidth = fixedSize;
@@ -109,25 +104,25 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
     // Disable Safari's automatic text size adjustment!
     if (isSafari)
       document.documentElement.style.setProperty(
-        "-webkit-text-size-adjust",
-        "90%"
+          "-webkit-text-size-adjust",
+          "90%"
       );
 
     // Fix orientation zoom issue in iOS Safari :/
     if (isSafari && isIOS) {
       document.addEventListener(
-        "gesturestart",
-        function fixZoom() {
-          const meta = document.querySelector("meta[name=viewport]");
-          if (meta) {
-            meta.setAttribute(
-              "content",
-              "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"
-            );
-          }
-          document.removeEventListener("gesturestart", fixZoom, true);
-        },
-        true
+          "gesturestart",
+          function fixZoom() {
+            const meta = document.querySelector("meta[name=viewport]");
+            if (meta) {
+              meta.setAttribute(
+                  "content",
+                  "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"
+              );
+            }
+            document.removeEventListener("gesturestart", fixZoom, true);
+          },
+          true
       );
     }
 
@@ -166,52 +161,84 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
       } else if (isZFlip) {
         container.style.transform = `translate(0%, 0%) scale(${scale * 1.3})`;
         container.style.webkitTransform = `translate(0%, 0%) scale3d(${
-          scale * 1.3
+            scale * 1.3
         }, ${scale * 1.3}, 1)`;
         linkDisabledImg.style.transform = `scale(${scale * 14})`;
-      } else if (isMobile || isIOS) {
+      } else if (isMobile) {
         container.style.transform = `translate(-50%, -50%) scale(${
-          scale * 1.2
+            scale * 1.2
         })`;
         container.style.webkitTransform = `translate(-50%, -50%) scale3d(${
-          scale * 1.2
+            scale * 1.2
         }, ${scale * 1.2}, 1)`;
         linkDisabledImg.style.transform = `scale(${scale * 4})`;
         if (isIOS) linkDisabledImg.style.transform = `scale(${scale * 16})`;
       } else {
         container.style.transform = `translate(-50%, -50%) scale(${
-          scale * 0.8
+            scale * 0.8
         })`;
         container.style.webkitTransform = `translate(-50%, -50%) scale3d(${
-          scale * 0.8
+            scale * 0.8
         }, ${scale * 0.8}, 1)`;
         linkDisabledImg.style.transform = `scale(${scale * 3})`;
       }
 
       if (isIOS) {
-        document
-          .querySelectorAll(".social-links img")
-          .forEach(img => (img.style.transform = `scale(${scale * 6})`));
 
-        // (ileride ekleyeceğim projelerde resim olur büyük ihtimalle :) )
-        // const projectLinkImages = document.querySelectorAll("#projects a img");
-        // projectLinkImages.forEach(img => {
-        //   img.style.transform = `scale(${scale * 6})`;
-        // });
+        let meta = document.querySelector("meta[name=viewport]");
+        if (!meta) {
+          meta = document.createElement("meta");
+          meta.name = "viewport";
+          document.head.appendChild(meta);
+        }
 
-        const socialButtons = document.querySelectorAll(
-          ".social-links a.social-btn"
-        );
-        socialButtons.forEach(btn => {
-          btn.style.transform = `scale(${scale * 18})`;
-          btn.style.marginRight = 96 + "px";
-          btn.style.marginLeft = 96 + "px";
-          btn.style.marginTop = 128 + "px";
-        });
+        meta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes');
+
+        const navSection = document.querySelector('.navigation-section');
+        if (navSection) {
+          navSection.style.display = 'flex';
+          navSection.style.visibility = 'visible';
+          navSection.style.opacity = '1';
+          navSection.style.position = 'relative';
+          navSection.style.zIndex = '1000';
+
+          const navButtons = navSection.querySelectorAll('.nav-button');
+          navButtons.forEach(navBtn => {
+            navBtn.style.marginLeft = '15px';
+            navBtn.style.marginRight = '15px';
+          });
+        }
+
+
+        const scale = 1;
+
+        container.style.transform = `translate(-50%, -50%) scale(1)`;
+        container.style.webkitTransform = `translate(-50%, -50%) scale3d(1, 1, 1)`;
+        linkDisabledImg.style.transform = `scale(${scale * 0.5})`;
+
+        document.querySelector(".social-links").style.gap = '6px';
+
+
+        const socialButtons = document.querySelectorAll(".social-links a.social-btn");
+        if (socialButtons.length > 0) {
+          socialButtons.forEach(btn => {
+            btn.style.marginTop = -32 + "px";
+            btn.style.marginBottom = 64 + "px";
+            btn.style.marginLeft = 0 + "px";
+            btn.style.marginRight = 6 + "px";
+            btn.style.borderRadius = '10px'
+            btn.style.width = '50px';
+            btn.style.height = '50px';
+            btn.style.removeProperty('transform');
+            const img = btn.querySelector('img');
+            if (img) {
+              img.style.width = '30px';
+              img.style.height = '30px';
+            }
+          });
+        }
       }
-
-      if (isSafari && (isIOS || isMac))
-        html.style.fontSize = 4.7545 / scale + "px";
+      if ((isMac && isSafari) || isIOS || isSafari ) html.style.fontSize = 8.16 / scale + "px";
     };
     setCanvasDimensions();
     updateContainerScale();
