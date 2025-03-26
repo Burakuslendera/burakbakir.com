@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
       }
     }
 
-    if (isIOS || (isSafari && !isMac)) {
+    if (isIOS || (isSafari && !isMac) || /iPad/.test(userAgent)) {
       baseWidth = window.innerWidth;
       baseHeight = window.innerHeight;
       designWidth = window.innerWidth;
@@ -175,17 +175,18 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
         if (isIOS) linkDisabledImg.style.transform = `scale(${scale * 16})`;
       } else {
         container.style.transform = `translate(-50%, -50%) scale(${
-            scale * 0.8
+            scale * 0.7
         })`;
         container.style.webkitTransform = `translate(-50%, -50%) scale3d(${
-            scale * 0.8
-        }, ${scale * 0.8}, 1)`;
+            scale * 0.7
+        }, ${scale * 0.7}, 1)`;
         linkDisabledImg.style.transform = `scale(${scale * 3})`;
-        linkDisabledImg.style.marginBottom = 64 + "px";
-        linkDisabledImg.style.marginTop = 32 + "px";
       }
 
-      if ((isMac && isSafari) || /iPad/.test(userAgent)) linkDisabledImg.style.transform = `scale(${scale * 0.2})`;
+      linkDisabledImg.style.marginBottom = 64 + "px";
+      linkDisabledImg.style.marginTop = 32 + "px";
+
+      if ((isMac && isSafari) || /iPad/.test(userAgent)) linkDisabledImg.style.transform = `scale(${scale * 2})`;
 
       if (isIOS) {
 
