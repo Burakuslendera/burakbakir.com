@@ -183,8 +183,10 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
         linkDisabledImg.style.transform = `scale(${scale * 3})`;
       }
 
-      linkDisabledImg.style.marginBottom = 64 + "px";
-      linkDisabledImg.style.marginTop = 32 + "px";
+      if (!isIOS) {
+        linkDisabledImg.style.marginBottom = 64 + "px";
+        linkDisabledImg.style.marginTop = 32 + "px";
+      }
 
       if ((isMac && isSafari) || /iPad/.test(userAgent)) linkDisabledImg.style.transform = `scale(${scale * 2})`;
 
