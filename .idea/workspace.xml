@@ -4,9 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="82a393ce-df03-4a05-b0a5-b1e9270c70e0" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/deviceScale.js" beforeDir="false" afterPath="$PROJECT_DIR$/deviceScale.js" afterDir="false" />
-    </list>
+    <list default="true" id="82a393ce-df03-4a05-b0a5-b1e9270c70e0" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -55,7 +53,7 @@
       <option name="presentableId" value="Default" />
       <updated>1742046671256</updated>
       <workItem from="1742046671813" duration="18415000" />
-      <workItem from="1742977855817" duration="6619000" />
+      <workItem from="1742977855817" duration="6950000" />
     </task>
     <servers />
   </component>
