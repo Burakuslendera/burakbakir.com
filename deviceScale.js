@@ -3,7 +3,7 @@ const isMobile = /Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(
     userAgent
 );
 const isSafari = /^((?!chrome|android).)*safari/i.test(userAgent);
-const isIOS = /iPad|iPhone|iPod/.test(userAgent);
+const isIOS = /iPhone|iPod/.test(userAgent);
 const isZFlip = /SM-F[0-9]{3,}/i.test(userAgent);
 const isMac = /mac/i.test(userAgent);
 
@@ -181,6 +181,8 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
             scale * 0.8
         }, ${scale * 0.8}, 1)`;
         linkDisabledImg.style.transform = `scale(${scale * 3})`;
+        linkDisabledImg.style.marginBottom = 64 + "px";
+        linkDisabledImg.style.marginTop = 32 + "px";
       }
 
       if (isIOS) {

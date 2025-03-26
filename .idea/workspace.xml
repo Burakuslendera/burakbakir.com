@@ -7,7 +7,6 @@
     <list default="true" id="82a393ce-df03-4a05-b0a5-b1e9270c70e0" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/deviceScale.js" beforeDir="false" afterPath="$PROJECT_DIR$/deviceScale.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/style.css" beforeDir="false" afterPath="$PROJECT_DIR$/style.css" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,7 +56,7 @@
       <option name="presentableId" value="Default" />
       <updated>1742046671256</updated>
       <workItem from="1742046671813" duration="18415000" />
-      <workItem from="1742977855817" duration="10331000" />
+      <workItem from="1742977855817" duration="11774000" />
     </task>
     <servers />
   </component>
