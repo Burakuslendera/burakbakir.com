@@ -238,7 +238,8 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
           });
         }
       }
-      if ((isMac && isSafari) || isIOS || isSafari ) html.style.fontSize = 4.16 / scale + "px";
+      if (isIOS) html.style.fontSize = 5.16 / scale + "px";
+      if (isMac && isSafari) html.style.fontSize = 32.16 / scale + "px";
     };
     setCanvasDimensions();
     updateContainerScale();
