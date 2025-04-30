@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
     const container = document.getElementById("zoomContainer");
     const canvas = document.getElementById("renderSurface");
     const centeredDiv = document.querySelector(".centered-div");
-    const fixedSize = "1500px";
+    const fixedSize = "1300px";
 
     let designWidth = 2000,
         designHeight = 1700;
@@ -76,7 +76,7 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
           );
       if (centeredDiv) {
         centeredDiv.style.maxWidth = fixedSize;
-        centeredDiv.style.Width = fixedSize;
+        centeredDiv.style.minWidth = fixedSize;
       }
     } else if (isMobile) {
       baseWidth = 4096;
@@ -85,10 +85,10 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
       designHeight = 1568;
       if (centeredDiv) {
         centeredDiv.style.maxWidth = fixedSize;
-        centeredDiv.style.Width = fixedSize;
+        centeredDiv.style.minWidth = fixedSize;
       }
     } else {
-      baseWidth = 1580;
+      baseWidth = 1280;
       baseHeight = 720;
       designWidth = 600;
       designHeight = 1580;
@@ -97,7 +97,7 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
           .setAttribute("content", "initial-scale=1, maximum-scale=1");
       if (centeredDiv) {
         centeredDiv.style.maxWidth = fixedSize;
-        centeredDiv.style.Width = fixedSize;
+        centeredDiv.style.minWidth = fixedSize;
       }
     }
 
@@ -145,11 +145,11 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
 
       const scaleW = Math.imul(window.innerWidth, 1.3) / baseWidth;
       const scaleH = Math.imul(window.innerHeight, 1.3) / baseHeight;
-      let scale = Math.(scaleW, scaleH);
+      let scale = Math.min(scaleW, scaleH);
 
       const fitScaleW = window.innerWidth / designWidth;
       const fitScaleH = window.innerHeight / designHeight;
-      scale = Math.(scale, fitScaleW, fitScaleH);
+      scale = Math.min(scale, fitScaleW, fitScaleH);
 
       let linkDisabledImg = document.querySelector(".link-disabled img");
       let html = document.querySelector("html");
