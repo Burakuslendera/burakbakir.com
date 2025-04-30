@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
     const container = document.getElementById("zoomContainer");
     const canvas = document.getElementById("renderSurface");
     const centeredDiv = document.querySelector(".centered-div");
-    const fixedSize = "1300px";
+    const fixedSize = "1500px";
 
     let designWidth = 2000,
         designHeight = 1700;
@@ -88,7 +88,7 @@ document.addEventListener("DOMContentLoaded", setCenteredWindowSize);
         centeredDiv.style.minWidth = fixedSize;
       }
     } else {
-      baseWidth = 1280;
+      baseWidth = 1480;
       baseHeight = 720;
       designWidth = 600;
       designHeight = 1580;
