@@ -140,12 +140,10 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
 
     var scalingDone = Promise.resolve();
 
-    if (flags.isDesktop) {
+    if (flags.isDesktop || flags.isMobile) {
       scalingDone = scaleDesktop(container, flags) || Promise.resolve();
     } else if (flags.isZFlip) {
       scaleZFlip(container);
-    } else if (flags.isMobile) {
-      scalingDone = scaleMobile(container, flags) || Promise.resolve();
     } else {
       scaleIOS(container, flags);
     }
@@ -220,46 +218,6 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
       "translate(0%, 0%) scale(" + scale + ")";
     container.style.webkitTransform =
       "translate(0%, 0%) scale3d(" + scale + "," + scale + ",1)";
-  }
-
-  // ── Mobile (Android) ──────────────────────────────────────────────────────
-  function scaleMobile(container, flags) {
-    // Mobil için genişliği zorunlu kılıp yüksekliği içeriğe bırakıyoruz
-    container.style.width = MOBILE_DESIGN_WIDTH + "px";
-    container.style.height = "auto";
-    container.style.maxHeight = "none";
-    
-    // Geçici olarak scale 1'e ayarlayıp resimlerin yüklenmesini bekle
-    container.style.transform = "translate(-50%, -50%) scale(1)";
-    if (flags.isSafari) {
-      container.style.webkitTransform = "translate(-50%, -50%) scale3d(1,1,1)";
-    }
-
-    return waitForImages(container).then(function () {
-      applyMobileScale(container, flags);
-    });
-  }
-
-  function applyMobileScale(container, flags) {
-    var vw = window.innerWidth;
-    var vh = window.innerHeight;
-
-    var naturalH = container.scrollHeight;
-
-    // Yükseklik ve genişlik oranlarını hesapla (tıpkı masaüstündeki gibi)
-    var scaleForHeight = (vh * VIEWPORT_FIT_FACTOR) / naturalH;
-    var scaleForWidth = vw / MOBILE_DESIGN_WIDTH;
-    
-    // Masaüstü (PC) hissiyatını vermek için her iki yönden en dar olanı baz alıp kartı ekrana tam oturtuyoruz.
-    var scale = Math.min(scaleForHeight, scaleForWidth);
-
-    container.style.transform = "translate(-50%, -50%) scale(" + scale + ")";
-    if (flags.isSafari) {
-      container.style.webkitTransform =
-        "translate(-50%, -50%) scale3d(" + scale + "," + scale + ",1)";
-    }
-
-    container.style.maxHeight = (vh * VIEWPORT_FIT_FACTOR / scale) + "px";
   }
 
   // ── iOS / iPad ────────────────────────────────────────────────────────────
