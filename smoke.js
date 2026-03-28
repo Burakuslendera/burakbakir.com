@@ -76,11 +76,11 @@
       var getter =
         module && module.__esModule
           ? function getDefault() {
-              return module["default"];
-            }
+            return module["default"];
+          }
           : function getModuleExports() {
-              return module;
-            };
+            return module;
+          };
       __webpack_require__.d(getter, "a", getter);
       return getter;
     };
@@ -113,7 +113,7 @@
       exports.SHADER_SOURCE =
         exports.DRAWING_PARAMS =
         exports.behavior =
-          void 0;
+        void 0;
 
       function ownKeys(object, enumerableOnly) {
         const keys = Object.keys(object);
@@ -380,7 +380,7 @@
             },
             {
               key: "deactivate",
-              value: function deactivate() {},
+              value: function deactivate() { },
             },
             {
               key: "reset",
@@ -1333,42 +1333,42 @@
             // Eğer density zaten varsa resizeDoubleFBO ile yeniden boyutlandır, yoksa createDoubleFBO ile oluştur.
             density = !density
               ? createDoubleFBO(
-                  dyeWidth,
-                  dyeHeight,
-                  rgba.internalFormat,
-                  rgba.format,
-                  texType,
-                  filtering
-                )
+                dyeWidth,
+                dyeHeight,
+                rgba.internalFormat,
+                rgba.format,
+                texType,
+                filtering
+              )
               : resizeDoubleFBO(
-                  density,
-                  dyeWidth,
-                  dyeHeight,
-                  rgba.internalFormat,
-                  rgba.format,
-                  texType,
-                  filtering
-                );
+                density,
+                dyeWidth,
+                dyeHeight,
+                rgba.internalFormat,
+                rgba.format,
+                texType,
+                filtering
+              );
 
             // Velocity (hız alanı) tamponu aynı mantıkla oluştur veya yeniden boyutlandır.
             velocity = !velocity
               ? createDoubleFBO(
-                  simWidth,
-                  simHeight,
-                  rg.internalFormat,
-                  rg.format,
-                  texType,
-                  filtering
-                )
+                simWidth,
+                simHeight,
+                rg.internalFormat,
+                rg.format,
+                texType,
+                filtering
+              )
               : resizeDoubleFBO(
-                  velocity,
-                  simWidth,
-                  simHeight,
-                  rg.internalFormat,
-                  rg.format,
-                  texType,
-                  filtering
-                );
+                velocity,
+                simWidth,
+                simHeight,
+                rg.internalFormat,
+                rg.format,
+                texType,
+                filtering
+              );
 
             // Bloom efekti için tek bir FBO yeterli (double FBO gerekmez).
             bloom = createFBO(
@@ -1674,7 +1674,7 @@
             // clearProgram shader'ına uTexture adında bir uniform değişkenine 'target' (eski FBO) texture'ı bağlanıyor.
             // target.attach(0), mevcut target FBO'nun texture'ını TEXTURE0 birimine atar ve shader'ın uTexture'u için kullanılır.
             webGL.uniform1i(
-              PROGRAMS.clearProgram.uniforms.texture,
+              PROGRAMS.clearProgram.uniforms.uTexture,
               target.attach(0)
             );
 
@@ -1899,9 +1899,9 @@
               1.0 / simWidth,
               1.0 / simHeight
             );
-            // uVelocity'ye mevcut hız alanını (velocity.read) bağlıyoruz.
+            // uVelocity'ye mevcut hız alanını (uvelocity.read) bağlıyoruz.
             webGL.uniform1i(
-              PROGRAMS.curlProgram.uniforms.velocity,
+              PROGRAMS.curlProgram.uniforms.uVelocity,
               velocity.read.attach(0)
             );
             // curl.fbo içerisine curl değerleri hesaplanıp yazılıyor.
@@ -1916,11 +1916,11 @@
               1.0 / simHeight
             );
             webGL.uniform1i(
-              PROGRAMS.vorticityProgram.uniforms.velocity,
+              PROGRAMS.vorticityProgram.uniforms.uVelocity,
               velocity.read.attach(0)
             );
             webGL.uniform1i(
-              PROGRAMS.vorticityProgram.uniforms.curl,
+              PROGRAMS.vorticityProgram.uniforms.uCurl,
               curl.attach(1)
             );
             // 'curl' parametresi, akışın ne kadar kıvrılacağını kontrol eden bir katsayıdır.
@@ -1943,7 +1943,7 @@
               1.0 / simHeight
             );
             webGL.uniform1i(
-              PROGRAMS.divergenceProgram.uniforms.velocity,
+              PROGRAMS.divergenceProgram.uniforms.uVelocity,
               velocity.read.attach(0)
             );
             blit(divergence.fbo);
