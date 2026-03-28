@@ -1,13 +1,18 @@
-// ─── Device Detection ────────────────────────────────────────────────────────
-const _ua = navigator.userAgent;
-const isIOS = /iPhone|iPod/.test(_ua);
-const isIPad = /iPad/.test(_ua) ||
-  (/Macintosh/.test(_ua) && navigator.maxTouchPoints > 1);
-const isZFlip = /SM-F[0-9]{3,}/i.test(_ua);
-const isMobile = !isIOS && !isIPad && !isZFlip &&
-  /Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(_ua);
-const isSafari = /^((?!chrome|android).)*safari/i.test(_ua);
-const isDesktop = !isIOS && !isIPad && !isZFlip && !isMobile;
+// ─── Dynamic Device Detection ────────────────────────────────────────────────
+// Re-evaluated on every scaleContent() call so DevTools device switches are
+// picked up without a page reload.
+function getDeviceFlags() {
+  var ua = navigator.userAgent;
+  var isIOS    = /iPhone|iPod/.test(ua);
+  var isIPad   = /iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  var isZFlip  = /SM-F[0-9]{3,}/i.test(ua);
+  var isMobile = !isIOS && !isIPad && !isZFlip &&
+                 /Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+  var isSafari = /^((?!chrome|android).)*safari/i.test(ua);
+  var isDesktop = !isIOS && !isIPad && !isZFlip && !isMobile;
+  return { isIOS: isIOS, isIPad: isIPad, isZFlip: isZFlip,
+           isMobile: isMobile, isSafari: isSafari, isDesktop: isDesktop };
+}
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 const DESKTOP_DESIGN_WIDTH = 800;
@@ -64,61 +69,116 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
   }
 
   // ── Viewport configuration per device ────────────────────────────────────
-  function configureViewport() {
-    if (isDesktop) {
+  function configureViewport(flags) {
+    if (flags.isDesktop) {
       setViewportMeta("width=device-width, initial-scale=1, maximum-scale=1");
-    } else if (isZFlip) {
+    } else if (flags.isZFlip) {
       setViewportMeta("width=device-width, initial-scale=1.4, maximum-scale=1.4");
-    } else if (isIOS || isIPad) {
+    } else if (flags.isIOS || flags.isIPad) {
       setViewportMeta(
         "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"
       );
-    } else if (isMobile) {
+    } else if (flags.isMobile) {
       setViewportMeta("width=device-width, initial-scale=1.0");
     }
 
-    if (isSafari) {
+    if (flags.isSafari) {
       document.documentElement.style.setProperty("-webkit-text-size-adjust", "100%");
     }
   }
 
+  // ── DevTools emulation tracking ──────────────────────────────────────────
+  // When emulating: outerWidth = real browser window, innerWidth = emulated device.
+  // The gap is always large (500+ px for any phone or tablet emulation).
+  // A real narrow browser window shrinks both together, so the gap stays small.
+  // DevTools panel docked on the side typically takes < 500 px, so using 500
+  // as threshold avoids false positives from the panel itself.
+  function _isDevToolsEmulation() {
+    return window.outerWidth > 900 && (window.outerWidth - window.innerWidth) > 500;
+  }
+
+  var _wasEmulated = _isDevToolsEmulation();
+
+  function _checkEmulationState() {
+    var nowEmulated = _isDevToolsEmulation();
+    if (_wasEmulated && !nowEmulated) {
+      // Emulation was just closed — reload to restore clean desktop state.
+      location.reload();
+      return;
+    }
+    _wasEmulated = nowEmulated;
+  }
+
+  // ── DPR change detection via matchMedia ───────────────────────────────────
+  // DevTools changes devicePixelRatio per device, which doesn't always fire
+  // a resize event. We re-register a matchMedia listener each time the DPR
+  // changes so we always catch the next change.
+  var _dprMql = null;
+
+  function _onDprChange() {
+    scaleContent();
+    _trackDpr();
+  }
+
+  function _trackDpr() {
+    if (_dprMql) _dprMql.removeEventListener("change", _onDprChange);
+    _dprMql = window.matchMedia(
+      "(resolution: " + window.devicePixelRatio + "dppx)"
+    );
+    _dprMql.addEventListener("change", _onDprChange);
+  }
+
   // ── Main entry ───────────────────────────────────────────────────────────
   function scaleContent() {
+    _checkEmulationState();
+    var flags = getDeviceFlags();
     var container = document.getElementById("zoomContainer");
     var canvas = document.getElementById("renderSurface");
 
     setCanvasDimensions(canvas);
-    configureViewport();
+    configureViewport(flags);
 
-    if (isDesktop) {
-      scaleDesktop(container);
-    } else if (isZFlip) {
+    var scalingDone = Promise.resolve();
+
+    if (flags.isDesktop) {
+      scalingDone = scaleDesktop(container, flags) || Promise.resolve();
+    } else if (flags.isZFlip) {
       scaleZFlip(container);
-    } else if (isMobile) {
-      scaleMobile(container);
+    } else if (flags.isMobile) {
+      scalingDone = scaleMobile(container, flags) || Promise.resolve();
     } else {
-      scaleIOS(container);
+      scaleIOS(container, flags);
     }
+
+    scalingDone.then(function() {
+      var loader = document.getElementById("loadingOverlay");
+      if (loader) {
+        loader.classList.add("hidden");
+        setTimeout(function() {
+          if (loader.parentNode) loader.parentNode.removeChild(loader);
+        }, 600);
+      }
+    });
   }
 
   // ── Desktop: wait for images, then fit all content in viewport ────────────
-  function scaleDesktop(container) {
+  function scaleDesktop(container, flags) {
     // Remove height constraints so scrollHeight reflects true content height
     container.style.width = DESKTOP_DESIGN_WIDTH + "px";
     container.style.height = "auto";
     container.style.maxHeight = "none";
     // Reset to no scale while we wait for images
     container.style.transform = "translate(-50%, -50%) scale(1)";
-    if (isSafari) {
+    if (flags.isSafari) {
       container.style.webkitTransform = "translate(-50%, -50%) scale3d(1,1,1)";
     }
 
-    waitForImages(container).then(function () {
-      applyDesktopScale(container);
+    return waitForImages(container).then(function () {
+      applyDesktopScale(container, flags);
     });
   }
 
-  function applyDesktopScale(container) {
+  function applyDesktopScale(container, flags) {
     var vw = window.innerWidth;
     var vh = window.innerHeight;
 
@@ -133,7 +193,7 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
     var scale = Math.min(scaleForHeight, scaleForWidth);
 
     container.style.transform = "translate(-50%, -50%) scale(" + scale + ")";
-    if (isSafari) {
+    if (flags.isSafari) {
       container.style.webkitTransform =
         "translate(-50%, -50%) scale3d(" + scale + "," + scale + ",1)";
     }
@@ -163,26 +223,43 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
   }
 
   // ── Mobile (Android) ──────────────────────────────────────────────────────
-  function scaleMobile(container) {
-    var baseW = 4096, baseH = 1280;
-
+  function scaleMobile(container, flags) {
+    // Mobil için genişliği zorunlu kılıp yüksekliği içeriğe bırakıyoruz
     container.style.width = MOBILE_DESIGN_WIDTH + "px";
-    container.style.height = MOBILE_DESIGN_HEIGHT + "px";
+    container.style.height = "auto";
+    container.style.maxHeight = "none";
+    
+    // Geçici olarak scale 1'e ayarlayıp resimlerin yüklenmesini bekle
+    container.style.transform = "translate(-50%, -50%) scale(1)";
+    if (flags.isSafari) {
+      container.style.webkitTransform = "translate(-50%, -50%) scale3d(1,1,1)";
+    }
 
-    var scaleW = (window.innerWidth * 1.3) / baseW;
-    var scaleH = (window.innerHeight * 1.3) / baseH;
-    var fitW = window.innerWidth / MOBILE_DESIGN_WIDTH;
-    var fitH = window.innerHeight / MOBILE_DESIGN_HEIGHT;
-    var scale = Math.min(scaleW, scaleH, fitW, fitH) * 1.2;
+    return waitForImages(container).then(function () {
+      applyMobileScale(container, flags);
+    });
+  }
 
-    container.style.transform =
-      "translate(-50%, -50%) scale(" + scale + ")";
-    container.style.webkitTransform =
-      "translate(-50%, -50%) scale3d(" + scale + "," + scale + ",1)";
+  function applyMobileScale(container, flags) {
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+
+    // Mobilde genişliği ekrana %90 sığacak şekilde ayarlayalım (kenarlardan boşluk kalsın)
+    var scale = (vw / MOBILE_DESIGN_WIDTH) * 0.95;
+
+    container.style.transform = "translate(-50%, -50%) scale(" + scale + ")";
+    if (flags.isSafari) {
+      container.style.webkitTransform =
+        "translate(-50%, -50%) scale3d(" + scale + "," + scale + ",1)";
+    }
+
+    // Yükseklik sınırını (max-height) ekranın %85'ine sabitleyelim ki taşıp dışarı çıkmasın
+    // CSS'teki overflow-y: auto sayesinde içerik uzarsa içeriden kaydırma (scroll) yapılabilsin.
+    container.style.maxHeight = (vh * 0.85 / scale) + "px";
   }
 
   // ── iOS / iPad ────────────────────────────────────────────────────────────
-  function scaleIOS(container) {
+  function scaleIOS(container, flags) {
     // CSS responsive rules handle layout; no JS scale transform needed
     container.style.transform = "translate(-50%, -50%) scale(1)";
     container.style.webkitTransform = "translate(-50%, -50%) scale3d(1,1,1)";
@@ -217,7 +294,7 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
     }
 
     // Fix iOS Safari gesture-zoom snapping
-    if (isIOS && isSafari) {
+    if (flags.isIOS && flags.isSafari) {
       document.addEventListener("gesturestart", function fixZoom() {
         setViewportMeta(
           "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"
@@ -228,9 +305,17 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
   }
 
   // ── Init and event wiring ─────────────────────────────────────────────────
+  var _resizeTimer = null;
+
   var init = function () {
     scaleContent();
-    window.addEventListener("resize", scaleContent);
+    if (window.matchMedia) _trackDpr();
+    // Debounce resize by 100 ms so Chrome DevTools has time to update
+    // navigator.userAgent and devicePixelRatio before we re-detect device type.
+    window.addEventListener("resize", function () {
+      clearTimeout(_resizeTimer);
+      _resizeTimer = setTimeout(scaleContent, 100);
+    });
     window.addEventListener("orientationchange", function () {
       setTimeout(scaleContent, 300);
     });

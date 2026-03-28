@@ -16,6 +16,12 @@
 </head>
 
 <body>
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="loader-content">
+      <div class="spinner"></div>
+      <p>Yükleniyor...</p>
+    </div>
+  </div>
   <canvas id="renderSurface"></canvas>
   <div class="centered-div" id="zoomContainer">
     <h1>
@@ -151,7 +157,13 @@
 
     const mouseHint = document.getElementById("mouseHint");
     let mouseMoves = 0;
-    const hideHint = () => {
+    const hideHint = (event) => {
+      // Yükleme ekranı hâlâ oradaysa fare hareketlerini sayma
+      if (document.getElementById("loadingOverlay")) return;
+
+      // Kullanıcının imleci ortadaki yazının (.centered-div) üzerindeyse sayacı artırma
+      if (event && event.target && event.target.closest('.centered-div')) return;
+
       mouseMoves++;
       if (mouseMoves > 40) {
         mouseHint.classList.add("hidden");
