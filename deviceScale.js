@@ -79,7 +79,10 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
         "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"
       );
     } else if (flags.isMobile) {
-      setViewportMeta("width=800, user-scalable=yes");
+      // Explicit initial-scale prevents Samsung Internet from persisting zoom on refresh.
+      // screen.width is in CSS pixels on Chromium-based browsers (Chrome, Samsung Internet).
+      var mobileInitialScale = (window.screen.width / DESKTOP_DESIGN_WIDTH).toFixed(4);
+      setViewportMeta("width=" + DESKTOP_DESIGN_WIDTH + ", initial-scale=" + mobileInitialScale + ", user-scalable=yes");
     }
 
     if (flags.isSafari) {
