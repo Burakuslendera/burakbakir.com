@@ -195,8 +195,10 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
     // Tüm görseller yüklendikten sonra doğal yüksekliği ölç
     var naturalH = container.scrollHeight;
 
-    // İçerik yüksekliği viewport yüksekliğinin VIEWPORT_FIT_FACTOR'üne sığsın
-    var scaleForHeight = (vh * VIEWPORT_FIT_FACTOR) / naturalH;
+    // Masaüstünde fare ipucu (bottom: 25px, ~30px yükseklik) için alan bırak
+    var availableH = flags.isDesktop ? vh - 70 : vh;
+    // İçerik yüksekliği kullanılabilir yüksekliğin VIEWPORT_FIT_FACTOR'üne sığsın
+    var scaleForHeight = (availableH * VIEWPORT_FIT_FACTOR) / naturalH;
     // Tasarım genişliği viewport genişliğine sığsın
     var scaleForWidth = vw / DESKTOP_DESIGN_WIDTH;
     // Daha kısıtlayıcı olanı kullan (tarayıcı zoom'unu telafi için >1'e izin verilir)
@@ -210,7 +212,7 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
 
     // Güvenlik maxHeight (ön-ölçek px cinsinden): dinamik içerik kartı büyütürse
     // (örn. Projeler sekmesine geçince) kart viewport'u taşmak yerine kaydırma çubuğu açar.
-    container.style.maxHeight = (vh * VIEWPORT_FIT_FACTOR / scale) + "px";
+    container.style.maxHeight = (availableH * VIEWPORT_FIT_FACTOR / scale) + "px";
   }
 
   // ── Z-Flip ────────────────────────────────────────────────────────────────
