@@ -113,6 +113,9 @@
       </div>
     </div>
   </div>
+  <div id="mouseHint" class="mouse-hint">
+    ✨ Arka planı keşfetmek için fareni hareket ettir ✨
+  </div>
   <script src="deviceScale.js"></script>
   <script>
     document.querySelectorAll(".nav-button").forEach(button => {
@@ -145,6 +148,20 @@
     const smoke = new Smoke(canvas);
 
     smoke.activate();
+
+    const mouseHint = document.getElementById("mouseHint");
+    let mouseMoves = 0;
+    const hideHint = () => {
+      mouseMoves++;
+      if (mouseMoves > 40) {
+        mouseHint.classList.add("hidden");
+        window.removeEventListener("mousemove", hideHint);
+        window.removeEventListener("touchmove", hideHint);
+      }
+    };
+
+    window.addEventListener("mousemove", hideHint);
+    window.addEventListener("touchmove", hideHint);
   </script>
 </body>
 
