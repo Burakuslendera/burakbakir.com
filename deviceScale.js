@@ -1,6 +1,6 @@
-// ─── Dynamic Device Detection ────────────────────────────────────────────────
-// Re-evaluated on every scaleContent() call so DevTools device switches are
-// picked up without a page reload.
+// ─── Dinamik Cihaz Tespiti ────────────────────────────────────────────────────
+// DevTools cihaz değişikliklerini sayfa yenilenmeden yakalamak için
+// her scaleContent() çağrısında yeniden değerlendirilir.
 function getDeviceFlags() {
   var ua = navigator.userAgent;
   var isIOS    = /iPhone|iPod/.test(ua);
@@ -14,16 +14,14 @@ function getDeviceFlags() {
            isMobile: isMobile, isSafari: isSafari, isDesktop: isDesktop };
 }
 
-// ─── Constants ───────────────────────────────────────────────────────────────
+// ─── Sabitler ────────────────────────────────────────────────────────────────
 const DESKTOP_DESIGN_WIDTH = 800;
-const MOBILE_DESIGN_WIDTH = 700;
-const MOBILE_DESIGN_HEIGHT = 1568;
 const VIEWPORT_FIT_FACTOR = 0.90;
 const IMAGE_LOAD_TIMEOUT_MS = 3000;
 
 (function () {
 
-  // ── Wait for all images in a container to load (or error/timeout) ─────────
+  // ── Tüm görseller yüklenene (veya hata/zaman aşımı olana) kadar bekle ─────
   function waitForImages(container) {
     var imgs = Array.from(container.querySelectorAll("img"));
     var promises = imgs.map(function (img) {
@@ -39,14 +37,14 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
     return Promise.race([Promise.all(promises), timeout]);
   }
 
-  // ── Canvas: correct physical pixel dimensions and DPR scaling ────────────
+  // ── Canvas: fiziksel piksel boyutlarını ve DPR ölçeklendirmesini düzelt ───
   function setCanvasDimensions(canvas) {
     canvas.style.width = window.innerWidth + "px";
     canvas.style.height = window.innerHeight + "px";
 
     if (window.devicePixelRatio > 1) {
       var dpr = Math.min(window.devicePixelRatio, 2);
-      // Assigning canvas.width resets the 2D context — must happen before scale()
+      // canvas.width atamak 2D context'i sıfırlar — scale()'den önce yapılmalı
       canvas.width = Math.round(window.innerWidth * dpr);
       canvas.height = Math.round(window.innerHeight * dpr);
       var ctx = canvas.getContext("2d");
@@ -57,7 +55,7 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
     }
   }
 
-  // ── Viewport meta helper ─────────────────────────────────────────────────
+  // ── Viewport meta yardımcısı ─────────────────────────────────────────────
   function setViewportMeta(content) {
     var meta = document.querySelector("meta[name=viewport]");
     if (!meta) {
@@ -68,7 +66,7 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
     meta.setAttribute("content", content);
   }
 
-  // ── Viewport configuration per device ────────────────────────────────────
+  // ── Cihaza göre viewport yapılandırması ──────────────────────────────────
   function configureViewport(flags) {
     if (flags.isDesktop) {
       setViewportMeta("width=device-width, initial-scale=1, maximum-scale=1");
@@ -79,8 +77,9 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
         "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"
       );
     } else if (flags.isMobile) {
-      // Explicit initial-scale prevents Samsung Internet from persisting zoom on refresh.
-      // screen.width is in CSS pixels on Chromium-based browsers (Chrome, Samsung Internet).
+      // Açık initial-scale, Samsung Internet'in yenilemede zoom seviyesini
+      // hatırlamasını engeller. screen.width, Chromium tabanlı tarayıcılarda
+      // (Chrome, Samsung Internet) CSS pikseli döndürür.
       var mobileInitialScale = (window.screen.width / DESKTOP_DESIGN_WIDTH).toFixed(4);
       setViewportMeta("width=" + DESKTOP_DESIGN_WIDTH + ", initial-scale=" + mobileInitialScale + ", user-scalable=yes");
     }
@@ -90,12 +89,19 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
     }
   }
 
-  // ── DevTools emulation tracking ──────────────────────────────────────────
-  // When emulating: outerWidth = real browser window, innerWidth = emulated device.
-  // The gap is always large (500+ px for any phone or tablet emulation).
-  // A real narrow browser window shrinks both together, so the gap stays small.
-  // DevTools panel docked on the side typically takes < 500 px, so using 500
-  // as threshold avoids false positives from the panel itself.
+  // ── Fare ipucu görünürlüğü ───────────────────────────────────────────────
+  // Mobil/dokunmatik cihazlarda fare ipucu anlamsız olduğundan gizlenir.
+  function updateMouseHint(flags) {
+    var hint = document.getElementById("mouseHint");
+    if (!hint) return;
+    hint.style.display = (flags.isDesktop) ? "" : "none";
+  }
+
+  // ── DevTools emülasyon takibi ─────────────────────────────────────────────
+  // Emülasyonda: outerWidth = gerçek tarayıcı penceresi, innerWidth = taklit edilen cihaz.
+  // Fark her zaman büyüktür (500+ px). Gerçek dar pencerede ikisi birlikte küçülür.
+  // DevTools panelinin yan yerleşimi genellikle 500 px'den azdır,
+  // bu yüzden 500 eşiği yanlış pozitiflerden kaçınmayı sağlar.
   function _isDevToolsEmulation() {
     return window.outerWidth > 900 && (window.outerWidth - window.innerWidth) > 500;
   }
@@ -105,17 +111,17 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
   function _checkEmulationState() {
     var nowEmulated = _isDevToolsEmulation();
     if (_wasEmulated && !nowEmulated) {
-      // Emulation was just closed — reload to restore clean desktop state.
+      // Emülasyon kapatıldı — temiz masaüstü görünümü için sayfayı yenile.
       location.reload();
       return;
     }
     _wasEmulated = nowEmulated;
   }
 
-  // ── DPR change detection via matchMedia ───────────────────────────────────
-  // DevTools changes devicePixelRatio per device, which doesn't always fire
-  // a resize event. We re-register a matchMedia listener each time the DPR
-  // changes so we always catch the next change.
+  // ── matchMedia ile DPR değişikliği tespiti ────────────────────────────────
+  // DevTools, cihaz başına devicePixelRatio'yu değiştirir; bu her zaman
+  // resize eventi tetiklemez. DPR her değiştiğinde dinleyiciyi yeniden
+  // kaydederek bir sonraki değişikliği her zaman yakalayabiliriz.
   var _dprMql = null;
 
   function _onDprChange() {
@@ -131,7 +137,7 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
     _dprMql.addEventListener("change", _onDprChange);
   }
 
-  // ── Main entry ───────────────────────────────────────────────────────────
+  // ── Ana giriş noktası ─────────────────────────────────────────────────────
   function scaleContent() {
     _checkEmulationState();
     var flags = getDeviceFlags();
@@ -140,6 +146,7 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
 
     setCanvasDimensions(canvas);
     configureViewport(flags);
+    updateMouseHint(flags);
 
     var scalingDone = Promise.resolve();
 
@@ -162,13 +169,13 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
     });
   }
 
-  // ── Desktop: wait for images, then fit all content in viewport ────────────
+  // ── Masaüstü: görseller yüklenince tüm içeriği viewport'a sığdır ─────────
   function scaleDesktop(container, flags) {
-    // Remove height constraints so scrollHeight reflects true content height
+    // scrollHeight gerçek içerik yüksekliğini yansıtsın diye kısıtlamaları kaldır
     container.style.width = DESKTOP_DESIGN_WIDTH + "px";
     container.style.height = "auto";
     container.style.maxHeight = "none";
-    // Reset to no scale while we wait for images
+    // Görseller beklenirken ölçekleme sıfırlanır
     container.style.transform = "translate(-50%, -50%) scale(1)";
     if (flags.isSafari) {
       container.style.webkitTransform = "translate(-50%, -50%) scale3d(1,1,1)";
@@ -180,17 +187,19 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
   }
 
   function applyDesktopScale(container, flags) {
+    // clientWidth/clientHeight layout viewport'u döndürür; mobilde
+    // window.innerWidth gibi görsel viewport'u değil.
     var vw = document.documentElement.clientWidth;
     var vh = document.documentElement.clientHeight;
 
-    // Measure natural height now that all images are loaded
+    // Tüm görseller yüklendikten sonra doğal yüksekliği ölç
     var naturalH = container.scrollHeight;
 
-    // Scale so content height fits VIEWPORT_FIT_FACTOR of viewport height
+    // İçerik yüksekliği viewport yüksekliğinin VIEWPORT_FIT_FACTOR'üne sığsın
     var scaleForHeight = (vh * VIEWPORT_FIT_FACTOR) / naturalH;
-    // Scale so design width fits viewport width
+    // Tasarım genişliği viewport genişliğine sığsın
     var scaleForWidth = vw / DESKTOP_DESIGN_WIDTH;
-    // Use the more restrictive constraint (allows scale > 1 to compensate for browser zoom-out)
+    // Daha kısıtlayıcı olanı kullan (tarayıcı zoom'unu telafi için >1'e izin verilir)
     var scale = Math.min(scaleForHeight, scaleForWidth);
 
     container.style.transform = "translate(-50%, -50%) scale(" + scale + ")";
@@ -199,9 +208,8 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
         "translate(-50%, -50%) scale3d(" + scale + "," + scale + ",1)";
     }
 
-    // Safety maxHeight (in pre-scale px): if dynamic content later grows the
-    // card (e.g. switching to Projects tab), the scrollbar activates instead
-    // of the card overflowing the viewport.
+    // Güvenlik maxHeight (ön-ölçek px cinsinden): dinamik içerik kartı büyütürse
+    // (örn. Projeler sekmesine geçince) kart viewport'u taşmak yerine kaydırma çubuğu açar.
     container.style.maxHeight = (vh * VIEWPORT_FIT_FACTOR / scale) + "px";
   }
 
@@ -225,11 +233,11 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
 
   // ── iOS / iPad ────────────────────────────────────────────────────────────
   function scaleIOS(container, flags) {
-    // CSS responsive rules handle layout; no JS scale transform needed
+    // CSS kuralları düzeni yönetir; JS ölçek dönüşümüne gerek yoktur
     container.style.transform = "translate(-50%, -50%) scale(1)";
     container.style.webkitTransform = "translate(-50%, -50%) scale3d(1,1,1)";
 
-    // Tighten nav button spacing for narrow screens
+    // Dar ekranlarda gezinme düğmesi boşluklarını daralt
     var navSection = container.querySelector(".navigation-section");
     if (navSection) {
       navSection.querySelectorAll(".nav-button").forEach(function (btn) {
@@ -238,7 +246,7 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
       });
     }
 
-    // Shrink social buttons so 8 fit on a narrow screen
+    // 8 sosyal buton dar ekrana sığsın diye küçült
     var socialLinks = container.querySelector(".social-links");
     if (socialLinks) {
       socialLinks.style.gap = "6px";
@@ -258,7 +266,7 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
       });
     }
 
-    // Fix iOS Safari gesture-zoom snapping
+    // iOS Safari hareket-zoom kaymasını düzelt
     if (flags.isIOS && flags.isSafari) {
       document.addEventListener("gesturestart", function fixZoom() {
         setViewportMeta(
@@ -269,14 +277,14 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
     }
   }
 
-  // ── Init and event wiring ─────────────────────────────────────────────────
+  // ── Başlatma ve olay bağlama ──────────────────────────────────────────────
   var _resizeTimer = null;
 
   var init = function () {
     scaleContent();
     if (window.matchMedia) _trackDpr();
-    // Debounce resize by 100 ms so Chrome DevTools has time to update
-    // navigator.userAgent and devicePixelRatio before we re-detect device type.
+    // Resize'ı 100 ms debounce et: Chrome DevTools'un navigator.userAgent ve
+    // devicePixelRatio'yu güncellemesi için zaman tanır.
     window.addEventListener("resize", function () {
       clearTimeout(_resizeTimer);
       _resizeTimer = setTimeout(scaleContent, 100);
