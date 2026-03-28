@@ -177,8 +177,8 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
   }
 
   function applyDesktopScale(container, flags) {
-    var vw = window.innerWidth;
-    var vh = window.innerHeight;
+    var vw = document.documentElement.clientWidth;
+    var vh = document.documentElement.clientHeight;
 
     // Measure natural height now that all images are loaded
     var naturalH = container.scrollHeight;
