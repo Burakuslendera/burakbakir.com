@@ -244,8 +244,14 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
     var vw = window.innerWidth;
     var vh = window.innerHeight;
 
-    // Mobilde genişliği ekrana %90 sığacak şekilde ayarlayalım (kenarlardan boşluk kalsın)
-    var scale = (vw / MOBILE_DESIGN_WIDTH) * 0.95;
+    var naturalH = container.scrollHeight;
+
+    // Yükseklik ve genişlik oranlarını hesapla (tıpkı masaüstündeki gibi)
+    var scaleForHeight = (vh * VIEWPORT_FIT_FACTOR) / naturalH;
+    var scaleForWidth = vw / MOBILE_DESIGN_WIDTH;
+    
+    // Masaüstü (PC) hissiyatını vermek için her iki yönden en dar olanı baz alıp kartı ekrana tam oturtuyoruz.
+    var scale = Math.min(scaleForHeight, scaleForWidth);
 
     container.style.transform = "translate(-50%, -50%) scale(" + scale + ")";
     if (flags.isSafari) {
@@ -253,9 +259,7 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
         "translate(-50%, -50%) scale3d(" + scale + "," + scale + ",1)";
     }
 
-    // Yükseklik sınırını (max-height) ekranın %85'ine sabitleyelim ki taşıp dışarı çıkmasın
-    // CSS'teki overflow-y: auto sayesinde içerik uzarsa içeriden kaydırma (scroll) yapılabilsin.
-    container.style.maxHeight = (vh * 0.85 / scale) + "px";
+    container.style.maxHeight = (vh * VIEWPORT_FIT_FACTOR / scale) + "px";
   }
 
   // ── iOS / iPad ────────────────────────────────────────────────────────────
