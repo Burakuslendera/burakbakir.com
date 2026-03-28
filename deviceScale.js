@@ -79,7 +79,7 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
         "width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"
       );
     } else if (flags.isMobile) {
-      setViewportMeta("width=device-width, initial-scale=1.0");
+      setViewportMeta("width=800, user-scalable=yes");
     }
 
     if (flags.isSafari) {
