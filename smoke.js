@@ -1151,26 +1151,6 @@
           })();
 
           /**
-           * smoothstep fonksiyonu, iki kenar değeri (edge0 ve edge1) arasında
-           * yumuşak bir geçiş (interpolasyon) sağlar. Bu, grafik programlamada
-           * sıkça kullanılan bir tekniktir ve genellikle shader'larda kullanılır.
-           *
-           * @param {number} edge0 - Geçişin başladığı kenar değeri.
-           * @param {number} edge1 - Geçişin bittiği kenar değeri.
-           * @param {number} x - Geçişin hesaplanacağı değer.
-           * @returns {number} - 0 ile 1 arasında yumuşak geçiş değeri.
-           */
-          function smoothstep(edge0, edge1, x) {
-            // x değerini [0, 1] aralığına sıkıştır (clamp).
-            // Bu, x'in edge0 ve edge1 arasında normalleştirilmesini sağlar.
-            x = Math.max(0, Math.min(1, (x - edge0) / (edge1 - edge0)));
-
-            // Yumuşak geçişi hesapla. Bu, x'in karesini alıp (3 - 2 * x) ile çarparak
-            // yumuşak bir eğri elde eder. Bu eğri, geçişin daha doğal görünmesini sağlar.
-            return x * x * (3 - 2 * x);
-          }
-
-          /**
            * LaunchBalloon fonksiyonu, verilen konumdan belirli sayıda (numParticles) ve hızda
            * parçacıklar "fırlatır". Bu parçacıklar 'splat' fonksiyonuyla simülasyona eklenir,
            * böylece ekranda baloncuk efekti oluşur.
@@ -1223,8 +1203,9 @@
             var screenY = y * scaleY;
             var size = uRadius * 3 * Math.min(scaleX, scaleY);
 
+            const newLocal = Math.round(Math.min(255, Math.max(0, balloonColor.r + 0.3) * 255));
             // Açık ve canlı renkler: +0.3 offset ile pastel ton
-            var cr = Math.round(Math.min(255, Math.max(0, balloonColor.r + 0.3) * 255));
+            var cr = newLocal;
             var cg = Math.round(Math.min(255, Math.max(0, balloonColor.g + 0.3) * 255));
             var cb = Math.round(Math.min(255, Math.max(0, balloonColor.b + 0.3) * 255));
 
@@ -1236,14 +1217,14 @@
               'width:' + size + 'px;height:' + size + 'px;' +
               'transform:translate(-50%,-50%) scale(0.3);opacity:0;' +
               'background:radial-gradient(circle at 35% 35%,' +
-                'rgba(255,255,255,0.3) 0%,' +
-                'rgba(' + cr + ',' + cg + ',' + cb + ',0.10) 30%,' +
-                'transparent 50%,' +
-                'rgba(' + cr + ',' + cg + ',' + cb + ',0.35) 72%,' +
-                'rgba(' + cr + ',' + cg + ',' + cb + ',0.55) 88%,' +
-                'transparent 100%);' +
+              'rgba(255,255,255,0.3) 0%,' +
+              'rgba(' + cr + ',' + cg + ',' + cb + ',0.10) 30%,' +
+              'transparent 50%,' +
+              'rgba(' + cr + ',' + cg + ',' + cb + ',0.35) 72%,' +
+              'rgba(' + cr + ',' + cg + ',' + cb + ',0.55) 88%,' +
+              'transparent 100%);' +
               'box-shadow:inset 0 0 ' + (size * 0.15) + 'px rgba(' + cr + ',' + cg + ',' + cb + ',0.2),' +
-                '0 0 ' + (size * 0.4) + 'px rgba(' + cr + ',' + cg + ',' + cb + ',0.15);';
+              '0 0 ' + (size * 0.4) + 'px rgba(' + cr + ',' + cg + ',' + cb + ',0.15);';
             document.body.appendChild(balloon);
 
             // Balon verisini global diziye ekle (canvas mousemove ile patlatma için)
@@ -1253,16 +1234,16 @@
             window._activeBalloons.push(balloonData);
 
             // Animasyon: belir → genişle → kaybol (eğer patlatılmazsa)
-            requestAnimationFrame(function() {
+            requestAnimationFrame(function () {
               balloon.style.transition = 'transform 2.5s ease-out, opacity 0.6s ease-in';
               balloon.style.transform = 'translate(-50%,-50%) scale(1)';
               balloon.style.opacity = '1';
-              setTimeout(function() {
+              setTimeout(function () {
                 if (balloonData.popped) return; // Zaten patlatıldıysa hiçbir şey yapma
                 balloonData.popped = true; // Tek kaynak: popped flag
                 balloon.style.transition = 'opacity 1.5s ease-in';
                 balloon.style.opacity = '0';
-                setTimeout(function() {
+                setTimeout(function () {
                   balloon.remove();
                   var idx = window._activeBalloons.indexOf(balloonData);
                   if (idx > -1) window._activeBalloons.splice(idx, 1);
@@ -1271,7 +1252,7 @@
             });
 
             if (burst) {
-              setTimeout(function() {
+              setTimeout(function () {
                 var burstColor = getComplementaryColor(generateColorHSV());
                 for (var i = 0; i < numParticles; i++) {
                   var angle = (i / numParticles) * 2 * Math.PI;
@@ -1724,7 +1705,7 @@
            *     texture: WebGLTexture,   // Oluşturulmuş WebGL texture nesnesi.
            *     width: number,           // Texture'ın genişliği (resim yüklendiğinde güncellenir).
            *     height: number,          // Texture'ın yüksekliği (resim yüklendiğinde güncellenir).
-           *     attach: function(id): number // Bu texture'ı belirtilen texture birimine bağlar ve id'yi döndür��r.
+           *     attach: function(id): number // Bu texture'ı belirtilen texture birimine bağlar ve id'yi döndürür.
            *   }
            */
           function createTextureAsync(url) {
@@ -2804,14 +2785,71 @@
                     }
                     // Hemen diziden kaldır (race condition önleme), DOM'u 300ms sonra temizle
                     window._activeBalloons.splice(bi, 1);
-                    (function(el) {
-                      setTimeout(function() { el.remove(); }, 300);
+                    (function (el) {
+                      setTimeout(function () { el.remove(); }, 300);
                     })(b.el);
                   }
                 }
               }
             }
           });
+
+          // Mobil dokunma desteği
+          canvas.addEventListener("touchmove", function (e) {
+            e.preventDefault();
+            var touches = e.targetTouches;
+            if (touches.length > 0 && pointers.length > 0) {
+              var t = touches[0];
+              var p = pointers[0];
+              var rect = canvas.getBoundingClientRect();
+              p.moved = true;
+              p.dx = (t.clientX - rect.left - p.x) * 5.0;
+              p.dy = (t.clientY - rect.top - p.y) * 5.0;
+              p.x = t.clientX - rect.left;
+              p.y = t.clientY - rect.top;
+              if (typeof splat === "function") {
+                splat(p.x, p.y, p.dx, p.dy);
+              }
+
+              // Balon patlatma (dokunma ile)
+              if (window._activeBalloons && window._activeBalloons.length > 0) {
+                var mx = p.x * (canvas.width / canvas.clientWidth);
+                var my = p.y * (canvas.height / canvas.clientHeight);
+                for (var bi = window._activeBalloons.length - 1; bi >= 0; bi--) {
+                  var b = window._activeBalloons[bi];
+                  if (b.popped) continue;
+                  var ddx = mx - b.cx, ddy = my - b.cy;
+                  if (ddx * ddx + ddy * ddy < b.radius * b.radius) {
+                    b.popped = true;
+                    b.el.style.transition = 'transform 0.25s ease-out, opacity 0.25s ease-out';
+                    b.el.style.transform = 'translate(-50%,-50%) scale(1.4)';
+                    b.el.style.opacity = '0';
+                    for (var j = 0; j < 120; j++) {
+                      var a = (j / 120) * 2 * Math.PI;
+                      var vel = 5 + Math.random() * 5;
+                      var spread = Math.random() * b.radius * 0.6;
+                      var bpx = b.cx + Math.cos(a) * spread;
+                      var bpy = b.cy + Math.sin(a) * spread;
+                      splat(bpx, bpy, Math.cos(a) * vel, Math.sin(a) * vel);
+                    }
+                    window._activeBalloons.splice(bi, 1);
+                    (function (el) {
+                      setTimeout(function () { el.remove(); }, 300);
+                    })(b.el);
+                  }
+                }
+              }
+            }
+          }, { passive: false });
+
+          canvas.addEventListener("touchstart", function (e) {
+            var t = e.targetTouches[0];
+            if (t && pointers.length > 0) {
+              var rect = canvas.getBoundingClientRect();
+              pointers[0].x = t.clientX - rect.left;
+              pointers[0].y = t.clientY - rect.top;
+            }
+          }, { passive: true });
         }
         /**
          *

@@ -3,15 +3,17 @@
 // her scaleContent() çağrısında yeniden değerlendirilir.
 function getDeviceFlags() {
   var ua = navigator.userAgent;
-  var isIOS    = /iPhone|iPod/.test(ua);
-  var isIPad   = /iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
-  var isZFlip  = /SM-F[0-9]{3,}/i.test(ua);
+  var isIOS = /iPhone|iPod/.test(ua);
+  var isIPad = /iPad/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  var isZFlip = /SM-F[0-9]{3,}/i.test(ua);
   var isMobile = !isIOS && !isIPad && !isZFlip &&
-                 /Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+    /Android|webOS|BlackBerry|IEMobile|Opera Mini/i.test(ua);
   var isSafari = /^((?!chrome|android).)*safari/i.test(ua);
   var isDesktop = !isIOS && !isIPad && !isZFlip && !isMobile;
-  return { isIOS: isIOS, isIPad: isIPad, isZFlip: isZFlip,
-           isMobile: isMobile, isSafari: isSafari, isDesktop: isDesktop };
+  return {
+    isIOS: isIOS, isIPad: isIPad, isZFlip: isZFlip,
+    isMobile: isMobile, isSafari: isSafari, isDesktop: isDesktop
+  };
 }
 
 // ─── Sabitler ────────────────────────────────────────────────────────────────
@@ -158,11 +160,11 @@ const IMAGE_LOAD_TIMEOUT_MS = 3000;
       scaleIOS(container, flags);
     }
 
-    scalingDone.then(function() {
+    scalingDone.then(function () {
       var loader = document.getElementById("loadingOverlay");
       if (loader) {
         loader.classList.add("hidden");
-        setTimeout(function() {
+        setTimeout(function () {
           if (loader.parentNode) loader.parentNode.removeChild(loader);
         }, 600);
       }

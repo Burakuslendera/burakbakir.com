@@ -208,7 +208,8 @@ html {
   white-space: nowrap;
 }
 
-@media (max-width: 768px), (hover: none) and (pointer: coarse) {
+@media (max-width: 768px),
+(hover: none) and (pointer: coarse) {
   .mouse-hint {
     display: none !important;
   }
@@ -220,10 +221,13 @@ html {
 }
 
 @keyframes pulse-hint {
-  0%, 100% {
+
+  0%,
+  100% {
     opacity: 0.5;
     transform: translate(-50%, 0);
   }
+
   50% {
     opacity: 1;
     transform: translate(-50%, -8px);
@@ -273,18 +277,23 @@ html {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @keyframes pulse-loader {
-  0%, 100% { 
-    opacity: 0.6; 
-    transform: scale(0.98); 
-    text-shadow: 0 0 10px rgba(139, 0, 255, 0.3); 
+
+  0%,
+  100% {
+    opacity: 0.6;
+    transform: scale(0.98);
+    text-shadow: 0 0 10px rgba(139, 0, 255, 0.3);
   }
-  50% { 
-    opacity: 1; 
-    transform: scale(1); 
-    text-shadow: 0 0 20px rgba(139, 0, 255, 0.8); 
+
+  50% {
+    opacity: 1;
+    transform: scale(1);
+    text-shadow: 0 0 20px rgba(139, 0, 255, 0.8);
   }
 }
