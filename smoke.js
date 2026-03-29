@@ -1188,80 +1188,96 @@
             speed = 4.0,
             burst = false
           ) {
-            // Ekran boyutlarını al.
             const canvasHeight = canvas.height;
             const canvasWidth = canvas.width;
 
-            // Balonun yarıçapı ve kenar yumuşatma değerleri
             let uRadius = 50;
-            let uFeather = 30;
-
-            // Eğer cihaz mobilse, balon boyutunu ekran oranına göre %75 küçült
             if (isMobile()) {
-              uRadius *= 0.05;
-              uFeather *= 0.05;
+              uRadius *= 0.25;
             }
 
-            // Pikselin balon merkezine uzaklığını hesapla
-            const dist = Math.sqrt(
-              (x - canvasWidth / 2) ** 2 + (y - canvasHeight / 2) ** 2
-            );
-
-            // %10'luk bir marjin alanı hesaplayarak balonların tamamen ekranın kenarına gitmesini engelliyoruz.
             const minY = canvasHeight * 0.1;
             const maxY = canvasHeight * 0.9;
             const minX = canvasWidth * 0.1;
             const maxX = canvasWidth * 0.9;
-
-            // x ve y koordinatlarını %10 marjin içinde sınırlıyoruz.
-            // Bu sayede baloncuklar ekranın tam kenarında oluşmak yerine bir miktar içeride kalırlar.
             x = Math.min(Math.max(x, minX), maxX);
             y = Math.min(Math.max(y, minY), maxY);
 
+            // --- 1. Fluid sim parçacıkları: duman etkileşimi için ---
+            const balloonColor = getComplementaryColor(generateColorHSV());
             for (let i = 0; i < numParticles; i++) {
-              let angle, velocity;
-
-              // Simetrik bir yayılma için düzenleme
-              angle = (i / numParticles) * 2 * Math.PI; // Parçacıklar eşit açılarla dağılır
-              velocity = speed + Math.random() * speed * 0.3; // Hızlar daha kontrollü bir şekilde yayılır
-
+              const angle = (i / numParticles) * 2 * Math.PI;
+              const velocity = speed + Math.random() * speed * 0.3;
               const dx = Math.cos(angle) * velocity;
               const dy = Math.sin(angle) * velocity;
-
-              // Parçacık rengi rastgele üretilen bir HSV renginin tamamlayıcı rengi olarak belirlenir.
-              const color = getComplementaryColor(hsv);
-
-              // Parçacığın şeffaflığı
-              const alpha = 1.0 - smoothstep(uRadius - uFeather, uRadius, dist);
-
-              // Splat fonksiyonu parçacığı simülasyona ekler
-              splat(x, y, dx, dy, { ...color, alpha });
+              splat(x, y, dx, dy, { ...balloonColor, alpha: 0.02, splatRadius: 0.0005 });
             }
 
-            const gl = canvas.getContext("webgl2");
+            // --- 2. Aktif balon listesine ekle (etkileşim için) ---
+            if (!window._activeBalloons) window._activeBalloons = [];
 
-            gl.useProgram(PROGRAMS.balloonProgram.program);
+            // --- 3. CSS şeffaf balon overlay ---
+            var scaleX = canvas.clientWidth / canvasWidth;
+            var scaleY = canvas.clientHeight / canvasHeight;
+            var screenX = x * scaleX;
+            var screenY = y * scaleY;
+            var size = uRadius * 3 * Math.min(scaleX, scaleY);
 
-            gl.enable(gl.BLEND);
+            // Açık ve canlı renkler: +0.3 offset ile pastel ton
+            var cr = Math.round(Math.min(255, Math.max(0, balloonColor.r + 0.3) * 255));
+            var cg = Math.round(Math.min(255, Math.max(0, balloonColor.g + 0.3) * 255));
+            var cb = Math.round(Math.min(255, Math.max(0, balloonColor.b + 0.3) * 255));
 
-            // Karışım fonksiyonlarını uygun şekilde yapılandırır
-            gl.blendFuncSeparate(
-              gl.SRC_ALPHA,
-              gl.ONE_MINUS_SRC_ALPHA,
-              gl.ONE,
-              gl.ONE_MINUS_SRC_ALPHA
-            );
+            var balloon = document.createElement('div');
+            balloon.className = 'smoke-balloon';
+            balloon.style.cssText =
+              'position:fixed;pointer-events:none;z-index:1;border-radius:50%;' +
+              'left:' + screenX + 'px;top:' + screenY + 'px;' +
+              'width:' + size + 'px;height:' + size + 'px;' +
+              'transform:translate(-50%,-50%) scale(0.3);opacity:0;' +
+              'background:radial-gradient(circle at 35% 35%,' +
+                'rgba(255,255,255,0.3) 0%,' +
+                'rgba(' + cr + ',' + cg + ',' + cb + ',0.10) 30%,' +
+                'transparent 50%,' +
+                'rgba(' + cr + ',' + cg + ',' + cb + ',0.35) 72%,' +
+                'rgba(' + cr + ',' + cg + ',' + cb + ',0.55) 88%,' +
+                'transparent 100%);' +
+              'box-shadow:inset 0 0 ' + (size * 0.15) + 'px rgba(' + cr + ',' + cg + ',' + cb + ',0.2),' +
+                '0 0 ' + (size * 0.4) + 'px rgba(' + cr + ',' + cg + ',' + cb + ',0.15);';
+            document.body.appendChild(balloon);
 
-            // Eğer burst true ise, 2 saniye sonra ek bir patlama dalgası daha yapar.
+            // Balon verisini global diziye ekle (canvas mousemove ile patlatma için)
+            var balloonData = {
+              cx: x, cy: y, radius: uRadius * 1.5, el: balloon, popped: false
+            };
+            window._activeBalloons.push(balloonData);
+
+            // Animasyon: belir → genişle → kaybol (eğer patlatılmazsa)
+            requestAnimationFrame(function() {
+              balloon.style.transition = 'transform 2.5s ease-out, opacity 0.6s ease-in';
+              balloon.style.transform = 'translate(-50%,-50%) scale(1)';
+              balloon.style.opacity = '1';
+              setTimeout(function() {
+                if (balloonData.popped) return; // Zaten patlatıldıysa hiçbir şey yapma
+                balloonData.popped = true; // Tek kaynak: popped flag
+                balloon.style.transition = 'opacity 1.5s ease-in';
+                balloon.style.opacity = '0';
+                setTimeout(function() {
+                  balloon.remove();
+                  var idx = window._activeBalloons.indexOf(balloonData);
+                  if (idx > -1) window._activeBalloons.splice(idx, 1);
+                }, 1500);
+              }, 2000);
+            });
+
             if (burst) {
-              setTimeout(() => {
-                for (let i = 0; i < numParticles; i++) {
-                  const angle = (i / numParticles) * 2 * Math.PI; // Eşit açılarla dağılır
-                  const velocity = speed * 1.5 + Math.random() * speed * 0.5; // Daha güçlü hızlar
-                  const dx = Math.cos(angle) * velocity;
-                  const dy = Math.sin(angle) * velocity;
-                  const color = getComplementaryColor(hsv);
-                  splat(x, y, dx, dy, { ...color, alpha: 1.0 }); // Daha güçlü renk ve opaklık
+              setTimeout(function() {
+                var burstColor = getComplementaryColor(generateColorHSV());
+                for (var i = 0; i < numParticles; i++) {
+                  var angle = (i / numParticles) * 2 * Math.PI;
+                  var velocity = speed * 1.5 + Math.random() * speed * 0.5;
+                  splat(x, y, Math.cos(angle) * velocity, Math.sin(angle) * velocity,
+                    { ...burstColor, alpha: 0.03, splatRadius: 0.0005 });
                 }
               }, 2000);
             }
@@ -1708,7 +1724,7 @@
            *     texture: WebGLTexture,   // Oluşturulmuş WebGL texture nesnesi.
            *     width: number,           // Texture'ın genişliği (resim yüklendiğinde güncellenir).
            *     height: number,          // Texture'ın yüksekliği (resim yüklendiğinde güncellenir).
-           *     attach: function(id): number // Bu texture'ı belirtilen texture birimine bağlar ve id'yi döndürür.
+           *     attach: function(id): number // Bu texture'ı belirtilen texture birimine bağlar ve id'yi döndür��r.
            *   }
            */
           function createTextureAsync(url) {
@@ -1803,6 +1819,10 @@
               // Bu noktada texture artık gerçek resim verisine sahip.
             };
 
+            image.onerror = function () {
+              console.warn("Dither texture yüklenemedi: " + url);
+            };
+
             // Resim henüz yüklenmemiş olsa bile obj'yi geri döndürüyoruz.
             // Daha sonra onload tetiklendiğinde texture güncellenecek!!!
             return obj;
@@ -1863,7 +1883,7 @@
               // Tüm işaretçilerin rengini getComplementaryColor fonksiyonu kullanarak günceller.
               for (let i = 0; i < pointers.length; i++) {
                 const p = pointers[i];
-                p.color = getComplementaryColor(getComplementaryColor(hsv));
+                p.color = getComplementaryColor(generateColorHSV());
               }
             }
           }
@@ -2394,9 +2414,13 @@
             webGL.uniform3f(PROGRAMS.splatProgram.uniforms.color, dx, -dy, 1.0);
 
             // radius: Splatın etki alanı. Burada emitter_size parametresi 100'e bölünerek küçük bir etki alanı yaratılır.
+            var splatRadius = PARAMS.emitter_size / 100.0;
+            if (color && color.splatRadius !== undefined) {
+              splatRadius = color.splatRadius;
+            }
             webGL.uniform1f(
               PROGRAMS.splatProgram.uniforms.radius,
-              PARAMS.emitter_size / 100.0
+              splatRadius
             );
 
             // velocity.write fbo'suna çizim yapılır, sonra read/write değiştirilir.
@@ -2411,14 +2435,18 @@
               density.read.attach(0)
             );
 
-            // Density için kullanılan renk, generateColorHSV() ve getComplementaryColor() ile dinamik olarak belirlenir.
-            // Burada color değişkeni yeniden atanarak yeni bir renk elde ediliyor.
-            color = getComplementaryColor(generateColorHSV());
+            // Density için kullanılan renk belirlenir.
+            // Eğer alpha değeri varsa (balon parçacıkları), geçirilen rengi kullan ve alpha ile ölçekle.
+            // Yoksa (fare etkileşimi), yeni rastgele renk üret.
+            if (!color || color.alpha === undefined) {
+              color = getComplementaryColor(generateColorHSV());
+            }
+            var intensity = color.alpha !== undefined ? color.alpha : 1.0;
             webGL.uniform3f(
               PROGRAMS.splatProgram.uniforms.color,
-              color.r,
-              color.g,
-              color.b
+              color.r * intensity,
+              color.g * intensity,
+              color.b * intensity
             );
 
             // Density'ye de splat uygulanır.
@@ -2434,10 +2462,12 @@
            */
           function multipleSplats(amount) {
             for (let i = 0; i < amount; i++) {
-              // Her bir splat için bir renk oluşturuluyor ve sabit bir konuma (500,500)
-              // sabit hızla (100,0) splat basılıyor.
               const color = getComplementaryColor(generateColorHSV());
-              splat(500, 500, 100, 0, color);
+              const sx = Math.random() * canvas.width;
+              const sy = Math.random() * canvas.height;
+              const sdx = (Math.random() - 0.5) * 200;
+              const sdy = (Math.random() - 0.5) * 200;
+              splat(sx, sy, sdx, sdy, color);
             }
           }
 
@@ -2468,9 +2498,9 @@
            *   v: Value (0.5 - 1.0 aralığında, yani renkler genelde parlak)
            */
           function generateColorHSV() {
-            let h = Math.random() * 0.2; // Hue için 0-1 arası rastgele değer, 0 ve 1 aynı renge (kırmızı) denk gelir (0.2 ile çarpılır)
-            let s = 2.0; // Saturation normalde 0-1 aralığına sığar, burada 2.0 ile aşırı doygun renkler tercih ediliyor
-            let v = Math.random() * 0.5 + 0.7; // 0.5 ile 1.0 arasında parlaklık seçimi
+            let h = Math.random(); // Hue için 0-1 arası rastgele değer, tam renk spektrumu
+            let s = 2.0; // Aşırı doygunluk: p=v*(1-2)=-v → negatif kanallar → additive blend'de beyaza kaymayı engeller
+            let v = Math.random() * 0.5 + 0.7; // 0.7 ile 1.2 arası, half-float texture negatif/büyük değerleri destekler
             return { h, s, v };
           }
 
@@ -2484,7 +2514,7 @@
            */
           function getComplementaryHSV(hsv) {
             // hue'yu derecelere çevirerek 180 derece ekliyoruz, sonra tekrar mod 360 alarak çember üzerinde kalıyoruz.
-            let complementaryHue = (hsv.h * 360 + 180) % 360;
+            let complementaryHue = ((hsv.h * 360 + 180) % 360) / 360;
             // s ve v değerleri aynı kalır.
             return { h: complementaryHue, s: hsv.s, v: hsv.v };
           }
@@ -2565,10 +2595,11 @@
               complementaryHSV.v
             );
 
-            // Şimdilik sabit bir çarpanla çarparak renkleri biraz solgunlaştırıyoruz.
-            rgb.r *= 0.59317844;
-            rgb.g *= 0.59317843;
-            rgb.b *= 0.5931784;
+            // İntensite kontrolü: s=2.0 zaten negatif kanallar ürettiğinden
+            // beyaza kaymayı engelliyor, burada sadece parlaklık ayarlanıyor.
+            rgb.r *= 0.75;
+            rgb.g *= 0.75;
+            rgb.b *= 0.75;
 
             return rgb;
           }
@@ -2705,6 +2736,13 @@
            * @param {number} resolution - Temel alınacak çözünürlük değeri.
            * @returns {{width: number, height: number}} En-boy oranına göre uyarlanmış çözünürlük.
            */
+          function getTextureScale(texture, width, height) {
+            return {
+              x: width / texture.width,
+              y: height / texture.height
+            };
+          }
+
           function getResolution(resolution) {
             let aspectRatio =
               webGL.drawingBufferWidth / webGL.drawingBufferHeight;
@@ -2738,6 +2776,39 @@
               p.y = e.clientY - rect.top;
               if (typeof splat === "function") {
                 splat(p.x, p.y, p.dx, p.dy);
+              }
+
+              // Balon patlatma: fare bir balona yakınsa patlat
+              if (window._activeBalloons && window._activeBalloons.length > 0) {
+                var mx = p.x * (canvas.width / canvas.clientWidth);
+                var my = p.y * (canvas.height / canvas.clientHeight);
+                for (var bi = window._activeBalloons.length - 1; bi >= 0; bi--) {
+                  var b = window._activeBalloons[bi];
+                  if (b.popped) continue;
+                  // sqrt yerine kare karşılaştırma (performans)
+                  var ddx = mx - b.cx, ddy = my - b.cy;
+                  if (ddx * ddx + ddy * ddy < b.radius * b.radius) {
+                    b.popped = true;
+                    // Patlama animasyonu
+                    b.el.style.transition = 'transform 0.25s ease-out, opacity 0.25s ease-out';
+                    b.el.style.transform = 'translate(-50%,-50%) scale(1.4)';
+                    b.el.style.opacity = '0';
+                    // Patlama efekti: balon alanını fluid density ile doldur
+                    for (var j = 0; j < 120; j++) {
+                      var a = (j / 120) * 2 * Math.PI;
+                      var vel = 5 + Math.random() * 5;
+                      var spread = Math.random() * b.radius * 0.6;
+                      var bpx = b.cx + Math.cos(a) * spread;
+                      var bpy = b.cy + Math.sin(a) * spread;
+                      splat(bpx, bpy, Math.cos(a) * vel, Math.sin(a) * vel);
+                    }
+                    // Hemen diziden kaldır (race condition önleme), DOM'u 300ms sonra temizle
+                    window._activeBalloons.splice(bi, 1);
+                    (function(el) {
+                      setTimeout(function() { el.remove(); }, 300);
+                    })(b.el);
+                  }
+                }
               }
             }
           });
@@ -2814,7 +2885,7 @@
            *
            * @type {number[]}
            */
-          this.color = [30, 0, 255];
+          this.color = { r: 0.12, g: 0, b: 1.0 };
         };
       },
   });
